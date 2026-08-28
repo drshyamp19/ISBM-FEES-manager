@@ -877,6 +877,75 @@
             gap: 10px;
             align-items: center;
         }
+
+        /* ─── FOOTER TEXT LOGO ─── */
+        .footer-brand {
+            text-align: center;
+            margin-top: 30px;
+            padding: 25px 20px 15px 20px;
+            border-top: 1px solid #e9edf4;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        }
+        .footer-brand .logo-text {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #0f2b5b;
+            line-height: 1.1;
+        }
+        .footer-brand .logo-text .gopal {
+            color: #0f2b5b;
+        }
+        .footer-brand .logo-text .academy {
+            color: #1a4a8a;
+            font-weight: 700;
+        }
+        .footer-brand .tagline {
+            font-size: 14px;
+            font-weight: 500;
+            color: #556b8a;
+            margin: 6px 0 10px 0;
+            letter-spacing: 1px;
+        }
+        .footer-brand .tagline span {
+            margin: 0 6px;
+        }
+        .footer-brand .contact-info {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0f2b5b;
+            margin-top: 6px;
+        }
+        .footer-brand .contact-info .website {
+            color: #1a4a8a;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        .footer-brand .contact-info .website:hover {
+            text-decoration: underline;
+        }
+        .footer-brand .contact-info .phone {
+            color: #c0392b;
+            font-weight: 700;
+        }
+        .footer-brand .divider {
+            display: inline-block;
+            margin: 0 10px;
+            color: #dce3ef;
+        }
+        @media (max-width: 480px) {
+            .footer-brand .logo-text {
+                font-size: 24px;
+            }
+            .footer-brand .tagline {
+                font-size: 12px;
+            }
+            .footer-brand .contact-info {
+                font-size: 13px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1009,10 +1078,26 @@
             </div>
         </div>
 
-        <div style="margin-top:24px;text-align:center;font-size:13px;color:#8899bb;">
-            <i class="fas fa-edit"></i> Click <strong>✎</strong> to edit University Fee &amp; Extra Charge &nbsp;·&nbsp;
-            <i class="fab fa-whatsapp" style="color:#25d366;"></i> Click <strong>💬</strong> to share via WhatsApp
+        <!-- FOOTER: Text Logo & Contact -->
+        <div class="footer-brand">
+            <div class="logo-text">
+                <span class="gopal">GOPAL</span><br />
+                <span class="academy">EDUCATION ACADEMY</span>
+            </div>
+            <div class="tagline">
+                <span>COMPUTER EDUCATION</span>
+                <span class="divider">|</span>
+                <span>UNIVERSITY COURSES</span>
+                <span class="divider">|</span>
+                <span>CAREER GUIDANCE</span>
+            </div>
+            <div class="contact-info">
+                <a href="https://gopaleducationacademy.co.in" target="_blank" class="website">gopaleducationacademy.co.in</a>
+                <span class="divider">|</span>
+                <span class="phone">📞 9309543825</span>
+            </div>
         </div>
+
     </div>
 
     <!-- WHATSAPP MODAL -->
