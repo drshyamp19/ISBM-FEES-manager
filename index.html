@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ISBM University – Fee Structure</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet" />
+    <style>
+        /* ─── BASE ─── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f6f9fc;
+            color: #1a1a2e;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(135deg, #0f2b5b, #1a4a8a);
+            color: #fff;
+            padding: 28px 32px;
+            border-radius: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+            box-shadow: 0 8px 30px rgba(15, 43, 91, 0.25);
+        }
+        .header-left h1 {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .header-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+        }
+        .header-actions .badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+        }
+        .header-actions .badge i {
+            margin-right: 8px;
+        }
+        .btn-login {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-login:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .btn-logout {
+            background: #c0392b;
+            border: none;
+            color: #fff;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-logout:hover {
+            background: #e74c3c;
+        }
+        /* Admin panels */
+        .admin-panel {
+            display: none;
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px 28px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e9edf4;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px 28px;
+        }
+        .admin-panel.visible {
+            display: flex;
+        }
+        .admin-panel .panel-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: #0f2b5b;
+            width: 100%;
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .admin-panel .panel-title .sub {
+            font-weight: 400;
+            font-size: 12px;
+            color: #8899bb;
+            margin-left: 8px;
+        }
+        .admin-panel label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a2a4a;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .admin-panel input,
+        .admin-panel select {
+            padding: 8px 14px;
+            border: 2px solid #dce3ef;
+            border-radius: 10px;
+            font-size: 14px;
+            background: #fafcff;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .admin-panel input:focus,
+        .admin-panel select:focus {
+            border-color: #1a4a8a;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(26, 74, 138, 0.08);
+        }
+        .admin-panel .btn-apply {
+            background: #0f2b5b;
+            color: #fff;
+            border: none;
+            padding: 9px 22px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .admin-panel .btn-apply:hover {
+            background: #1a4a8a;
+            transform: scale(1.02);
+        }
+        .admin-panel .btn-apply.danger {
+            background: #b03a2e;
+        }
+        .admin-panel .btn-apply.danger:hover {
+            background: #c0392b;
+        }
+        .admin-panel .btn-apply.success {
+            background: #28a745;
+        }
+        .admin-panel .btn-apply.success:hover {
+            background: #218838;
+        }
+        .admin-panel .btn-apply.warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        .admin-panel .btn-apply.warning:hover {
+            background: #e0a800;
+        }
+        .admin-panel .doc-fee-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            align-items: center;
+        }
+        .admin-panel .doc-fee-group label {
+            font-weight: 500;
+            font-size: 13px;
+        }
+        .admin-panel .doc-fee-group input {
+            width: 100px;
+        }
+        .tag-individual {
+            background: #d4edda;
+            color: #155724;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .tag-bulk {
+            background: #fff3cd;
+            color: #856404;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        /* Password change panel */
+        .password-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            align-items: center;
+        }
+        .password-group label {
+            font-weight: 500;
+            font-size: 13px;
+        }
+        .password-group input {
+            width: 140px;
+        }
+        /* Commission bar */
+        .commission-bar {
+            display: none;
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px 28px;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 18px 30px;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e9edf4;
+        }
+        .commission-bar.visible {
+            display: flex;
+        }
+        .commission-bar label {
+            font-weight: 600;
+            font-size: 15px;
+            color: #1a2a4a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .commission-bar label i {
+            color: #1a4a8a;
+        }
+        .commission-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .commission-input-group input {
+            padding: 10px 16px;
+            border: 2px solid #dce3ef;
+            border-radius: 10px;
+            font-size: 15px;
+            width: 120px;
+            font-weight: 600;
+            background: #fafcff;
+        }
+        .commission-input-group input:focus {
+            border-color: #1a4a8a;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(26, 74, 138, 0.12);
+        }
+        .commission-input-group select {
+            padding: 10px 16px;
+            border: 2px solid #dce3ef;
+            border-radius: 10px;
+            font-size: 15px;
+            background: #fafcff;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .commission-input-group .btn-apply {
+            background: #0f2b5b;
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .commission-input-group .btn-apply:hover {
+            background: #1a4a8a;
+            transform: scale(1.02);
+        }
+        .commission-display {
+            font-size: 15px;
+            background: #eef4fb;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #0f2b5b;
+            margin-left: auto;
+        }
+        .commission-display span {
+            color: #c0392b;
+        }
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 24px;
+            align-items: center;
+        }
+        .toolbar .search-box {
+            flex: 1;
+            min-width: 220px;
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 12px;
+            padding: 0 16px;
+            border: 2px solid #e9edf4;
+            transition: 0.2s;
+        }
+        .toolbar .search-box:focus-within {
+            border-color: #1a4a8a;
+            box-shadow: 0 0 0 4px rgba(26, 74, 138, 0.08);
+        }
+        .toolbar .search-box i {
+            color: #8899bb;
+        }
+        .toolbar .search-box input {
+            border: none;
+            padding: 12px 14px;
+            font-size: 15px;
+            width: 100%;
+            background: transparent;
+            font-family: inherit;
+        }
+        .toolbar .search-box input:focus {
+            outline: none;
+        }
+        .toolbar .school-filter {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .toolbar .school-filter button {
+            padding: 8px 18px;
+            border-radius: 40px;
+            border: 2px solid #dce3ef;
+            background: #fff;
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #1a2a4a;
+        }
+        .toolbar .school-filter button.active {
+            background: #0f2b5b;
+            color: #fff;
+            border-color: #0f2b5b;
+        }
+        .toolbar .school-filter button:hover:not(.active) {
+            background: #eef4fb;
+        }
+        /* Table */
+        .table-wrap {
+            background: #fff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e9edf4;
+        }
+        .table-scroll {
+            overflow-x: auto;
+            padding: 4px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 820px;
+        }
+        thead {
+            background: #f0f5fd;
+            border-bottom: 2px solid #dce3ef;
+        }
+        thead th {
+            padding: 16px 18px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #1a2a4a;
+            white-space: nowrap;
+        }
+        thead th:last-child {
+            text-align: center;
+        }
+        .admin-col {
+            display: none;
+        }
+        .admin-col.visible {
+            display: table-cell;
+        }
+        tbody tr {
+            border-bottom: 1px solid #eef2f8;
+            transition: 0.15s;
+        }
+        tbody tr:hover {
+            background: #f8faff;
+        }
+        tbody td {
+            padding: 14px 18px;
+            vertical-align: middle;
+        }
+        .col-program {
+            font-weight: 600;
+            color: #0f2b5b;
+        }
+        .col-school {
+            font-size: 12px;
+            color: #556b8a;
+            background: #eef4fb;
+            padding: 4px 12px;
+            border-radius: 40px;
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .col-duration {
+            color: #2c3e66;
+            font-weight: 500;
+        }
+        .col-uni-fee {
+            font-weight: 600;
+            color: #1a2a4a;
+        }
+        .col-extra {
+            font-weight: 600;
+            color: #004085;
+        }
+        .col-commission {
+            color: #c0392b;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .col-total {
+            font-weight: 700;
+            font-size: 16px;
+            color: #0f2b5b;
+        }
+        .col-actions {
+            text-align: center;
+            white-space: nowrap;
+        }
+        .col-actions .btn-icon {
+            background: transparent;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: 0.2s;
+            color: #556b8a;
+        }
+        .col-actions .btn-icon:hover {
+            background: #eef4fb;
+            color: #0f2b5b;
+        }
+        .col-actions .btn-icon.edit:hover {
+            color: #1a4a8a;
+        }
+        .btn-icon.whatsapp {
+            background: transparent;
+            border: none;
+            padding: 0 6px;
+            font-size: 16px;
+            color: #25d366;
+            cursor: pointer;
+            transition: 0.2s;
+            vertical-align: middle;
+        }
+        .btn-icon.whatsapp:hover {
+            transform: scale(1.15);
+        }
+        /* Edit mode */
+        .edit-input {
+            width: 110px;
+            padding: 6px 10px;
+            border: 2px solid #1a4a8a;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            background: #fafcff;
+            font-family: inherit;
+        }
+        .edit-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(26, 74, 138, 0.12);
+        }
+        .edit-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+        .edit-actions button {
+            border: none;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .edit-actions .save-edit {
+            background: #0f2b5b;
+            color: #fff;
+        }
+        .edit-actions .save-edit:hover {
+            background: #1a4a8a;
+        }
+        .edit-actions .cancel-edit {
+            background: #e9edf4;
+            color: #1a2a4a;
+        }
+        .edit-actions .cancel-edit:hover {
+            background: #dce3ef;
+        }
+        tr.editing-row {
+            background: #f0f7ff !important;
+            border-left: 4px solid #1a4a8a;
+        }
+        tr.editing-row td {
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+        .uni-fee-readonly {
+            font-weight: 600;
+            color: #1a2a4a;
+            background: #f0f5fd;
+            padding: 4px 12px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        /* WhatsApp Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            padding: 20px;
+        }
+        .modal-overlay.open {
+            display: flex;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: 24px;
+            max-width: 620px;
+            width: 100%;
+            padding: 32px 36px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            animation: modalIn 0.25s ease;
+        }
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.94) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .modal-box .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .modal-box .modal-header h2 {
+            font-size: 20px;
+            color: #0f2b5b;
+        }
+        .modal-box .modal-header .close-modal {
+            background: none;
+            border: none;
+            font-size: 26px;
+            cursor: pointer;
+            color: #8899bb;
+            transition: 0.2s;
+        }
+        .modal-box .modal-header .close-modal:hover {
+            color: #1a2a4a;
+        }
+        .modal-box .message-preview {
+            background: #f0f5fd;
+            border-radius: 14px;
+            padding: 20px 24px;
+            font-size: 14px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 320px;
+            overflow-y: auto;
+            border: 1px solid #dce3ef;
+            font-family: 'Inter', monospace;
+        }
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 22px;
+            flex-wrap: wrap;
+        }
+        .modal-box .modal-actions button {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-width: 140px;
+        }
+        .modal-box .modal-actions .btn-wa-send {
+            background: #25d366;
+            color: #fff;
+        }
+        .modal-box .modal-actions .btn-wa-send:hover {
+            background: #1ebd5e;
+            transform: scale(1.02);
+        }
+        .modal-box .modal-actions .btn-copy {
+            background: #eef4fb;
+            color: #1a2a4a;
+        }
+        .modal-box .modal-actions .btn-copy:hover {
+            background: #dce3ef;
+        }
+        /* Login Modal */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .login-overlay.hidden {
+            display: none;
+        }
+        .login-box {
+            background: #fff;
+            border-radius: 28px;
+            padding: 40px 36px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            animation: modalIn 0.3s ease;
+        }
+        .login-box h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: #0f2b5b;
+        }
+        .login-box p {
+            color: #556b8a;
+            margin-bottom: 28px;
+            font-size: 14px;
+        }
+        .login-box label {
+            font-weight: 600;
+            font-size: 14px;
+            display: block;
+            margin-bottom: 6px;
+            color: #1a2a4a;
+        }
+        .login-box input[type="password"] {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #dce3ef;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: 0.2s;
+            margin-bottom: 20px;
+            background: #fafcff;
+        }
+        .login-box input[type="password"]:focus {
+            border-color: #1a4a8a;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(26, 74, 138, 0.1);
+        }
+        .login-box .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #0f2b5b;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .login-box .login-btn:hover {
+            background: #1a4a8a;
+            transform: scale(1.02);
+        }
+        .login-box .login-error {
+            color: #c0392b;
+            font-size: 14px;
+            margin-top: 12px;
+            display: none;
+        }
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #0f2b5b;
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 14px;
+                padding: 20px;
+            }
+            .header-left h1 {
+                font-size: 20px;
+            }
+            .admin-panel {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 18px 20px;
+            }
+            .admin-panel .doc-fee-group,
+            .admin-panel .password-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .commission-bar {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 18px 20px;
+            }
+            .commission-display {
+                margin-left: 0;
+                text-align: center;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .toolbar .school-filter {
+                justify-content: center;
+            }
+            .modal-box {
+                padding: 24px 20px;
+            }
+            .modal-box .modal-actions {
+                flex-direction: column;
+            }
+            .modal-box .modal-actions button {
+                flex: none;
+            }
+            .login-box {
+                padding: 30px 24px;
+            }
+        }
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            .header {
+                padding: 16px;
+                border-radius: 14px;
+            }
+            table {
+                font-size: 12px;
+                min-width: 720px;
+            }
+            thead th,
+            tbody td {
+                padding: 10px 12px;
+            }
+            .col-total {
+                font-size: 14px;
+            }
+            .edit-input {
+                width: 80px;
+                font-size: 12px;
+            }
+        }
+        .table-scroll::-webkit-scrollbar {
+            height: 6px;
+        }
+        .table-scroll::-webkit-scrollbar-track {
+            background: #eef2f8;
+            border-radius: 10px;
+        }
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: #c5d0e0;
+            border-radius: 10px;
+        }
+        .table-scroll::-webkit-scrollbar-thumb:hover {
+            background: #a8b7ce;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #8899bb;
+        }
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+        .empty-state p {
+            font-size: 16px;
+        }
+        .text-muted {
+            color: #8899bb;
+            font-size: 13px;
+        }
+        .edit-row-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: flex-start;
+        }
+        .edit-row-group label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #556b8a;
+            margin-right: 4px;
+        }
+        .edit-row-group .edit-input {
+            width: 100px;
+        }
+        .edit-row-group .edit-row-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .reset-btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-left">
+                <h1>🏛️ ISBM University Raipur, Chhattisgarh Fees Structure</h1>
+            </div>
+            <div class="header-actions">
+                <span class="badge"><i class="fas fa-graduation-cap"></i> <span id="programCount">0</span> Programs</span>
+                <span class="badge"><i class="fas fa-university"></i> <span id="schoolCount">0</span> Schools</span>
+                <button id="loginToggleBtn" class="btn-login"><i class="fas fa-lock"></i> Admin Login</button>
+                <button id="logoutBtn" class="btn-logout" style="display:none;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </header>
+
+        <!-- ADMIN PANEL 1: BULK FEE EDIT -->
+        <div class="admin-panel" id="bulkEditPanel">
+            <div class="panel-title">
+                <i class="fas fa-layer-group"></i> Bulk Edit — University Fee
+                <span class="sub">(changes <strong>base fee</strong> of ALL programs)</span>
+                <span class="tag-bulk">BULK</span>
+            </div>
+            <label>Adjust by</label>
+            <input type="number" id="bulkPercent" value="10" step="0.5" style="width:80px;" />
+            <select id="bulkType">
+                <option value="percent">%</option>
+                <option value="fixed">₹ Fixed</option>
+            </select>
+            <button class="btn-apply" id="bulkApplyBtn"><i class="fas fa-arrow-up"></i> Increase All</button>
+            <button class="btn-apply danger" id="bulkDecreaseBtn"><i class="fas fa-arrow-down"></i> Decrease All</button>
+            <span class="text-muted" style="margin-left:auto;">Changes university fee of every program</span>
+        </div>
+
+        <!-- ADMIN PANEL 2: RESET TO PDF VALUES -->
+        <div class="admin-panel" id="resetPanel">
+            <div class="panel-title">
+                <i class="fas fa-undo-alt"></i> Reset University Fees to PDF Values
+                <span class="sub">(restores base fees from the original PDF)</span>
+            </div>
+            <div class="reset-btn-group">
+                <button class="btn-apply warning" id="resetBtn"><i class="fas fa-history"></i> Reset All University Fees</button>
+                <span class="text-muted">Extra Charges and Commission will remain unchanged.</span>
+            </div>
+        </div>
+
+        <!-- ADMIN PANEL 3: INDIVIDUAL EDIT hint -->
+        <div class="admin-panel" id="individualHint" style="border-left:4px solid #1a4a8a; padding:12px 24px; background:#f8faff;">
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; width:100%;">
+                <span><i class="fas fa-pen" style="color:#1a4a8a;"></i> <strong>Individual Edit:</strong></span>
+                <span>Click <span style="background:#eef4fb; padding:2px 10px; border-radius:6px;">✎</span> to edit <strong>University Fee</strong> and <strong>Extra Charge</strong> for <strong>only that program</strong>.</span>
+                <span class="tag-individual">ONE PROGRAM</span>
+            </div>
+        </div>
+
+        <!-- ADMIN PANEL 4: Document Charges -->
+        <div class="admin-panel" id="docFeePanel">
+            <div class="panel-title"><i class="fas fa-file-invoice"></i> Document Charges</div>
+            <div class="doc-fee-group">
+                <label>Degree Cert: <input type="number" id="docDegree" value="10500" step="500" /></label>
+                <label>Migration Cert: <input type="number" id="docMigration" value="6500" step="500" /></label>
+                <label>Provisional Degree: <input type="number" id="docProvisional" value="7500" step="500" /></label>
+                <button class="btn-apply" id="docSaveBtn"><i class="fas fa-save"></i> Save Documents</button>
+            </div>
+        </div>
+
+        <!-- ADMIN PANEL 5: Change Password -->
+        <div class="admin-panel" id="passwordPanel">
+            <div class="panel-title"><i class="fas fa-key"></i> Change Admin Password</div>
+            <div class="password-group">
+                <label>Current Password: <input type="password" id="currentPwd" placeholder="Enter current" /></label>
+                <label>New Password: <input type="password" id="newPwd" placeholder="New password" /></label>
+                <label>Confirm New: <input type="password" id="confirmPwd" placeholder="Confirm new" /></label>
+                <button class="btn-apply success" id="changePwdBtn"><i class="fas fa-save"></i> Update Password</button>
+            </div>
+        </div>
+
+        <!-- COMMISSION BAR -->
+        <div class="commission-bar" id="commissionBar">
+            <label><i class="fas fa-percent"></i> Commission / Service Charge</label>
+            <div class="commission-input-group">
+                <input type="number" id="commissionValue" value="25" min="0" step="0.5" />
+                <select id="commissionType">
+                    <option value="percentage">%</option>
+                    <option value="fixed">₹ Fixed</option>
+                </select>
+                <button class="btn-apply" id="applyCommissionBtn"><i class="fas fa-sync-alt"></i> Apply</button>
+            </div>
+            <div class="commission-display">
+                <i class="fas fa-calculator"></i> &nbsp;Commission: <span id="commissionDisplay">25%</span>
+                &nbsp;·&nbsp; <span id="totalWithCommissionLabel">₹0</span> avg. total
+            </div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search program, school..." />
+            </div>
+            <div class="school-filter" id="schoolFilter">
+                <button class="active" data-school="all">All</button>
+            </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-wrap">
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="min-width:160px;">Program</th>
+                            <th style="min-width:130px;">School</th>
+                            <th>Duration</th>
+                            <th>Eligibility</th>
+                            <th class="admin-col">Univ. Fee (₹)</th>
+                            <th class="admin-col">Extra Charge (₹)</th>
+                            <th class="admin-col">Commission</th>
+                            <th>Total Fees</th>
+                            <th class="admin-col" style="text-align:center;min-width:110px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- dynamic -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div style="margin-top:24px;text-align:center;font-size:13px;color:#8899bb;">
+            <i class="fas fa-edit"></i> Click <strong>✎</strong> to edit University Fee &amp; Extra Charge &nbsp;·&nbsp;
+            <i class="fab fa-whatsapp" style="color:#25d366;"></i> Click <strong>💬</strong> to share via WhatsApp
+        </div>
+    </div>
+
+    <!-- WHATSAPP MODAL -->
+    <div class="modal-overlay" id="waModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2><i class="fab fa-whatsapp" style="color:#25d366;"></i> Share via WhatsApp</h2>
+                <button class="close-modal" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="message-preview" id="waMessagePreview"></div>
+            <div class="modal-actions">
+                <button class="btn-wa-send" id="waSendBtn"><i class="fab fa-whatsapp"></i> Send to WhatsApp</button>
+                <button class="btn-copy" id="waCopyBtn"><i class="fas fa-copy"></i> Copy Message</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN OVERLAY -->
+    <div class="login-overlay hidden" id="loginOverlay">
+        <div class="login-box">
+            <h2>🔐 Admin Login</h2>
+            <p>Enter the admin password to manage fees.</p>
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter password" autofocus />
+            <button class="login-btn" id="loginBtn">Login</button>
+            <div class="login-error" id="loginError">Incorrect password. Please try again.</div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 1. DATA (Original PDF values)
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        const RAW_PROGRAMS = [
+            { id: 1, program: 'MA', school: 'Arts & Humanities', duration: '2 Sem', eligibility: 'Graduation',
+                uniFee: 22500 },
+            { id: 2, program: 'MSW', school: 'Arts & Humanities', duration: '2 Sem', eligibility: 'Graduation / 12th',
+                uniFee: 22500 },
+            { id: 3, program: 'BA', school: 'Arts & Humanities', duration: '3 Sem', eligibility: '12th or equivalent',
+                uniFee: 22500 },
+            { id: 4, program: 'BA Hons', school: 'Arts & Humanities', duration: '3 Sem', eligibility: '12th or equivalent',
+                uniFee: 27000 },
+            { id: 5, program: 'BSW', school: 'Arts & Humanities', duration: '3 Sem', eligibility: '12th or equivalent',
+                uniFee: 22500 },
+            { id: 6, program: 'PG Diploma Rural Dev.', school: 'Commerce', duration: '1 Sem', eligibility: 'Graduation',
+                uniFee: 37500 },
+            { id: 7, program: 'M.Com', school: 'Commerce', duration: '2 Sem', eligibility: 'Graduation', uniFee: 22500 },
+            { id: 8, program: 'B.Com (CA)', school: 'Commerce', duration: '3 Sem', eligibility: '12th or equivalent',
+                uniFee: 34500 },
+            { id: 9, program: 'B.Com Hons', school: 'Commerce', duration: '3 Sem', eligibility: '12th or equivalent',
+                uniFee: 34550 },
+            { id: 10, program: 'B.Com', school: 'Commerce', duration: '3 Sem', eligibility: '12th or equivalent',
+                uniFee: 30000 },
+            { id: 11, program: 'DBA', school: 'Management', duration: '1 Annual', eligibility: '12th or equivalent',
+                uniFee: 16500 },
+            { id: 12, program: 'BBA', school: 'Management', duration: '3 Sem', eligibility: '12th or equivalent',
+                uniFee: 52500 },
+            { id: 13, program: 'MBA', school: 'Management', duration: '2 Sem', eligibility: 'Graduation', uniFee: 60000 },
+            { id: 14, program: 'EMBA', school: 'Management', duration: '1.5 Sem', eligibility: 'Graduation',
+                uniFee: 45000 },
+            { id: 15, program: 'PGDBA', school: 'Management', duration: '1 Annual', eligibility: 'Graduation',
+                uniFee: 30000 },
+            { id: 16, program: 'B.LIB', school: 'Library & Info. Science', duration: '1 Annual',
+                eligibility: 'Graduation', uniFee: 15000 },
+            { id: 17, program: 'M.LIB', school: 'Library & Info. Science', duration: '1 Sem', eligibility: 'B.Lib',
+                uniFee: 18000 },
+            { id: 18, program: 'BSc PCM/ZBC', school: 'Science', duration: '3 Sem', eligibility: '12th with Science',
+                uniFee: 31500 },
+            { id: 19, program: 'BSc PCB', school: 'Science', duration: '3 Sem', eligibility: '12th with Science',
+                uniFee: 31500 },
+            { id: 20, program: 'B.Sc (Hons) Fashion Design', school: 'Design', duration: '3 Sem',
+                eligibility: '12th or equivalent', uniFee: 52500 },
+            { id: 21, program: 'B.Sc (Hons) Interior Design', school: 'Design', duration: '3 Sem',
+                eligibility: '12th or equivalent', uniFee: 52500 },
+            { id: 22, program: 'DFD', school: 'Design', duration: '1 Sem', eligibility: '12th or equivalent',
+                uniFee: 24000 },
+            { id: 23, program: 'MJMC', school: 'Journalism & Mass Comm.', duration: '2 Sem', eligibility: 'Graduation',
+                uniFee: 30000 },
+            { id: 24, program: 'BJMC', school: 'Journalism & Mass Comm.', duration: '3 Sem',
+                eligibility: '12th or equivalent', uniFee: 37500 },
+            { id: 25, program: 'LLM', school: 'Law', duration: '2 Sem', eligibility: 'LLB', uniFee: 45000 },
+            { id: 26, program: 'BHCMT', school: 'Hotel Management', duration: '4 Sem', eligibility: '12th or equivalent',
+                uniFee: 60000 },
+            { id: 27, program: 'DHCMT', school: 'Hotel Management', duration: '3 Sem', eligibility: '12th or equivalent',
+                uniFee: 24000 },
+            { id: 28, program: 'M.Sc. IT', school: 'Information Technology', duration: '2 Sem',
+                eligibility: '12th Science Stream', uniFee: 55500 },
+            { id: 29, program: 'M.Sc. CS', school: 'Information Technology', duration: '2 Sem',
+                eligibility: '12th Science Stream', uniFee: 55500 },
+            { id: 30, program: 'MCA', school: 'Information Technology', duration: '3 Sem', eligibility: 'Graduation',
+                uniFee: 57000 },
+            { id: 31, program: 'B.Sc. IT', school: 'Information Technology', duration: '3 Sem',
+                eligibility: '12th Science Stream', uniFee: 52500 },
+            { id: 32, program: 'B.Sc. CS', school: 'Information Technology', duration: '3 Sem',
+                eligibility: '12th Science Stream', uniFee: 52500 },
+            { id: 33, program: 'BCA', school: 'Information Technology', duration: '3 Sem', eligibility: '12th or equivalent',
+                uniFee: 52500 },
+            { id: 34, program: 'PGDCA', school: 'Information Technology', duration: '1 Annual', eligibility: 'Graduation',
+                uniFee: 12500 },
+            { id: 35, program: 'DCA', school: 'Information Technology', duration: '1 Annual',
+                eligibility: '12th or equivalent', uniFee: 10625 },
+            { id: 36, program: 'Diploma Eng', school: 'Engineering & Technology', duration: '3 Sem', eligibility: '10th',
+                uniFee: 67500 },
+            { id: 37, program: 'Diploma Eng (Lateral)', school: 'Engineering & Technology', duration: '3 Sem',
+                eligibility: '10+2 PCM+ITI', uniFee: 52500 },
+            { id: 38, program: 'B.Tech', school: 'Engineering & Technology', duration: '4 Sem', eligibility: '10+2 PCM',
+                uniFee: 165000 },
+            { id: 39, program: 'B.Tech (Lateral)', school: 'Engineering & Technology', duration: '3 Sem',
+                eligibility: 'Diploma in Engg', uniFee: 135000 },
+            { id: 40, program: 'M.Tech', school: 'Engineering & Technology', duration: '2 Sem', eligibility: 'Graduation',
+                uniFee: 105000 },
+        ];
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 2. STATE
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        let programs = [];
+        let commissionType = 'percentage';
+        let commissionValue = 25;
+        let currentSchoolFilter = 'all';
+        let searchQuery = '';
+        let editingId = null;
+        let adminLoggedIn = false;
+
+        let docFees = { degree: 10500, migration: 6500, provisional: 7500 };
+
+        // ── Admin password management ──
+        function getAdminPassword() {
+            return localStorage.getItem('admin_password') || 'isbm2025';
+        }
+
+        function setAdminPassword(newPwd) {
+            localStorage.setItem('admin_password', newPwd);
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 3. HELPERS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        function calcTotal(uniFee, type, val, extra) {
+            let commissionAmount;
+            if (type === 'percentage') {
+                commissionAmount = uniFee * (val / 100);
+            } else {
+                commissionAmount = val;
+            }
+            return Math.round(uniFee + commissionAmount + (extra || 0));
+        }
+
+        function formatCurrency(n) {
+            return '₹' + Number(n).toLocaleString('en-IN');
+        }
+
+        function getCommissionLabel(type, val) {
+            if (type === 'percentage') return val + '%';
+            return '₹' + Number(val).toLocaleString('en-IN');
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 4. PERSISTENCE
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        function loadProgramsFromStorage() {
+            const stored = localStorage.getItem('isbm_programs');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    const merged = RAW_PROGRAMS.map(r => {
+                        const found = parsed.find(p => p.id === r.id);
+                        if (found) {
+                            return { ...r, uniFee: found.uniFee, extraCharge: found.extraCharge || 0 };
+                        }
+                        return { ...r, extraCharge: 0 };
+                    });
+                    return merged;
+                } catch (e) { /* fallback */ }
+            }
+            return RAW_PROGRAMS.map(r => ({ ...r, extraCharge: 0 }));
+        }
+
+        function saveProgramsToStorage() {
+            const toStore = programs.map(p => ({ id: p.id, uniFee: p.uniFee, extraCharge: p.extraCharge }));
+            localStorage.setItem('isbm_programs', JSON.stringify(toStore));
+        }
+
+        function loadDocFeesFromStorage() {
+            const stored = localStorage.getItem('isbm_docfees');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (parsed.degree !== undefined) docFees = parsed;
+                } catch (e) { /* ignore */ }
+            }
+            document.getElementById('docDegree').value = docFees.degree;
+            document.getElementById('docMigration').value = docFees.migration;
+            document.getElementById('docProvisional').value = docFees.provisional;
+        }
+
+        function saveDocFeesToStorage() {
+            localStorage.setItem('isbm_docfees', JSON.stringify(docFees));
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 5. BUILD / RENDER
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        function buildPrograms() {
+            const loaded = loadProgramsFromStorage();
+            programs = loaded.map(p => {
+                const extra = p.extraCharge || 0;
+                const total = calcTotal(p.uniFee, commissionType, commissionValue, extra);
+                return { ...p, commissionType, commissionValue, total, extraCharge: extra, editing: false };
+            });
+        }
+
+        function getFiltered() {
+            let list = programs;
+            if (currentSchoolFilter !== 'all') {
+                list = list.filter(p => p.school === currentSchoolFilter);
+            }
+            if (searchQuery.trim()) {
+                const q = searchQuery.trim().toLowerCase();
+                list = list.filter(p =>
+                    p.program.toLowerCase().includes(q) ||
+                    p.school.toLowerCase().includes(q) ||
+                    p.eligibility.toLowerCase().includes(q)
+                );
+            }
+            return list;
+        }
+
+        function renderSchools() {
+            const schools = [...new Set(RAW_PROGRAMS.map(p => p.school))].sort();
+            const container = document.getElementById('schoolFilter');
+            const allBtn = container.querySelector('[data-school="all"]');
+            container.innerHTML = '';
+            // Recreate All button to ensure fresh listener
+            const newAll = document.createElement('button');
+            newAll.dataset.school = 'all';
+            newAll.textContent = 'All';
+            if (currentSchoolFilter === 'all') newAll.classList.add('active');
+            newAll.addEventListener('click', function(e) {
+                document.querySelectorAll('.school-filter button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentSchoolFilter = 'all';
+                renderTable();
+            });
+            container.appendChild(newAll);
+
+            schools.forEach(s => {
+                const btn = document.createElement('button');
+                btn.dataset.school = s;
+                btn.textContent = s;
+                if (currentSchoolFilter === s) btn.classList.add('active');
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.school-filter button').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentSchoolFilter = s;
+                    renderTable();
+                });
+                container.appendChild(btn);
+            });
+            document.getElementById('schoolCount').textContent = schools.length;
+        }
+
+        function renderTable() {
+            const filtered = getFiltered();
+            const tbody = document.getElementById('tableBody');
+
+            // Admin columns visibility
+            const adminCols = document.querySelectorAll('.admin-col');
+            adminCols.forEach(el => {
+                if (adminLoggedIn) el.classList.add('visible');
+                else el.classList.remove('visible');
+            });
+
+            // Admin panels visibility
+            document.getElementById('bulkEditPanel').classList.toggle('visible', adminLoggedIn);
+            document.getElementById('resetPanel').classList.toggle('visible', adminLoggedIn);
+            document.getElementById('individualHint').classList.toggle('visible', adminLoggedIn);
+            document.getElementById('docFeePanel').classList.toggle('visible', adminLoggedIn);
+            document.getElementById('passwordPanel').classList.toggle('visible', adminLoggedIn);
+            document.getElementById('commissionBar').classList.toggle('visible', adminLoggedIn);
+
+            document.getElementById('loginToggleBtn').style.display = adminLoggedIn ? 'none' : 'inline-block';
+            document.getElementById('logoutBtn').style.display = adminLoggedIn ? 'inline-block' : 'none';
+
+            if (filtered.length === 0) {
+                tbody.innerHTML =
+                    `<tr><td colspan="9"><div class="empty-state"><i class="fas fa-search"></i><p>No programs match your filter.</p></div></td></tr>`;
+                document.getElementById('programCount').textContent = '0';
+                return;
+            }
+
+            let html = '';
+            let totalSum = 0;
+            filtered.forEach(p => {
+                totalSum += p.total;
+                const isEditing = (editingId === p.id && adminLoggedIn);
+
+                const totalCell =
+                    `<td class="col-total">${formatCurrency(p.total)} <button class="btn-icon whatsapp" data-id="${p.id}" title="Share via WhatsApp"><i class="fab fa-whatsapp"></i></button></td>`;
+
+                let uniFeeDisplay = '',
+                    extraDisplay = '',
+                    commissionDisplay = '',
+                    actionsHtml = '';
+
+                if (adminLoggedIn) {
+                    if (isEditing) {
+                        uniFeeDisplay =
+                            `<input class="edit-input" type="number" id="editUniFee_${p.id}" value="${p.uniFee}" min="0" step="500" />`;
+                        extraDisplay =
+                            `<input class="edit-input" type="number" id="editExtra_${p.id}" value="${p.extraCharge}" min="0" step="100" />`;
+                    } else {
+                        uniFeeDisplay = `<span class="uni-fee-readonly">${formatCurrency(p.uniFee)}</span>`;
+                        extraDisplay = formatCurrency(p.extraCharge);
+                    }
+                    commissionDisplay = getCommissionLabel(p.commissionType, p.commissionValue);
+
+                    if (isEditing) {
+                        actionsHtml =
+                            `<div class="edit-actions"><button class="save-edit" data-id="${p.id}"><i class="fas fa-check"></i></button><button class="cancel-edit" data-id="${p.id}"><i class="fas fa-times"></i></button></div>`;
+                    } else {
+                        actionsHtml =
+                            `<button class="btn-icon edit" data-id="${p.id}" title="Edit University Fee & Extra Charge"><i class="fas fa-pen"></i></button>`;
+                    }
+                }
+
+                const rowClass = isEditing ? 'editing-row' : '';
+                html += `<tr class="${rowClass}">
+                    <td class="col-program">${p.program}</td>
+                    <td><span class="col-school">${p.school}</span></td>
+                    <td class="col-duration">${p.duration}</td>
+                    <td>${p.eligibility}</td>
+                    ${adminLoggedIn ? `
+                        <td class="col-uni-fee admin-col visible">${uniFeeDisplay}</td>
+                        <td class="col-extra admin-col visible">${extraDisplay}</td>
+                        <td class="col-commission admin-col visible">${commissionDisplay}</td>
+                    ` : ''}
+                    ${totalCell}
+                    ${adminLoggedIn ? `<td class="col-actions admin-col visible">${actionsHtml}</td>` : ''}
+                </tr>`;
+            });
+
+            tbody.innerHTML = html;
+            document.getElementById('programCount').textContent = filtered.length;
+
+            // ─── Event Listeners ───
+
+            if (adminLoggedIn) {
+                // Edit button
+                tbody.querySelectorAll('.btn-icon.edit').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = parseInt(btn.dataset.id);
+                        editingId = id;
+                        renderTable();
+                    });
+                });
+
+                // Save edit
+                tbody.querySelectorAll('.save-edit').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = parseInt(btn.dataset.id);
+                        const uniInput = document.getElementById(`editUniFee_${id}`);
+                        const extraInput = document.getElementById(`editExtra_${id}`);
+                        if (!uniInput || !extraInput) return;
+
+                        const newUniFee = parseFloat(uniInput.value);
+                        const newExtra = parseFloat(extraInput.value);
+
+                        if (isNaN(newUniFee) || newUniFee < 0) {
+                            showToast('⚠️ Please enter a valid University Fee.');
+                            return;
+                        }
+                        if (isNaN(newExtra) || newExtra < 0) {
+                            showToast('⚠️ Please enter a valid Extra Charge.');
+                            return;
+                        }
+
+                        const prog = programs.find(p => p.id === id);
+                        if (prog) {
+                            prog.uniFee = newUniFee;
+                            prog.extraCharge = newExtra;
+                            prog.total = calcTotal(newUniFee, commissionType, commissionValue, newExtra);
+                            saveProgramsToStorage();
+                            showToast(`✅ Updated "${prog.program}" — Univ Fee: ${formatCurrency(newUniFee)}, Extra: ${formatCurrency(newExtra)}`);
+                        }
+                        editingId = null;
+                        renderTable();
+                    });
+                });
+
+                // Cancel edit
+                tbody.querySelectorAll('.cancel-edit').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        editingId = null;
+                        renderTable();
+                    });
+                });
+            }
+
+            // WhatsApp share
+            tbody.querySelectorAll('.btn-icon.whatsapp').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.dataset.id);
+                    const prog = programs.find(p => p.id === id);
+                    if (prog) openWhatsAppModal(prog);
+                });
+            });
+
+            const avg = filtered.length ? Math.round(totalSum / filtered.length) : 0;
+            document.getElementById('totalWithCommissionLabel').textContent = formatCurrency(avg);
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 6. WHATSAPP MODAL
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        let waProgram = null;
+
+        function openWhatsAppModal(prog) {
+            waProgram = prog;
+            const msg = buildWhatsAppMessage(prog);
+            document.getElementById('waMessagePreview').textContent = msg;
+            document.getElementById('waModal').classList.add('open');
+        }
+
+        function buildWhatsAppMessage(prog) {
+            const lines = [];
+            lines.push('🏛️ *ISBM University Raipur Chhattisgarh*');
+            lines.push('');
+            lines.push(`📘 *Program:* ${prog.program}`);
+            lines.push(`⏳ *Duration:* ${prog.duration}`);
+            lines.push(`📋 *Eligibility:* ${prog.eligibility}`);
+            lines.push(`🏫 *School:* ${prog.school}`);
+            lines.push('');
+            lines.push(`💵 *Total Fees:* ${formatCurrency(prog.total)}`);
+            lines.push('Only for Marksheet');
+            lines.push('───────────────────────────');
+            lines.push('📄 *Additional Document Charges:*');
+            lines.push(`• Degree Certificate: ${formatCurrency(docFees.degree)}`);
+            lines.push(`• Migration Certificate: ${formatCurrency(docFees.migration)}`);
+            lines.push(`• Provisional Degree Certificate: ${formatCurrency(docFees.provisional)}`);
+            lines.push('───────────────────────────');
+            lines.push('');
+            lines.push('📌 For document applications, eligibility,');
+            lines.push('or any further information, please feel free to contact me.');
+            lines.push('');
+            lines.push('───────────────────────────');
+            lines.push('🙏 Thanks & Regards');
+            lines.push('*Mr. Shyam Pimplkar*');
+            lines.push('🌐 gopaleducationacademy.co.in');
+            lines.push('📱 9309543825');
+            return lines.join('\n');
+        }
+
+        // Modal controls
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            document.getElementById('waModal').classList.remove('open');
+        });
+        document.getElementById('waModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) document.getElementById('waModal').classList.remove('open');
+        });
+        document.getElementById('waSendBtn').addEventListener('click', () => {
+            if (!waProgram) return;
+            const msg = buildWhatsAppMessage(waProgram);
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+            document.getElementById('waModal').classList.remove('open');
+        });
+        document.getElementById('waCopyBtn').addEventListener('click', async () => {
+            if (!waProgram) return;
+            const msg = buildWhatsAppMessage(waProgram);
+            try {
+                await navigator.clipboard.writeText(msg);
+                showToast('📋 Message copied to clipboard!');
+            } catch {
+                const ta = document.createElement('textarea');
+                ta.value = msg;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('📋 Message copied!');
+            }
+            document.getElementById('waModal').classList.remove('open');
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 7. COMMISSION CONTROLS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        function applyCommission() {
+            const val = parseFloat(document.getElementById('commissionValue').value);
+            const type = document.getElementById('commissionType').value;
+            if (isNaN(val) || val < 0) { showToast('⚠️ Please enter a valid commission value.'); return; }
+            commissionValue = val;
+            commissionType = type;
+            programs.forEach(p => {
+                p.commissionType = type;
+                p.commissionValue = val;
+                p.total = calcTotal(p.uniFee, type, val, p.extraCharge);
+            });
+            document.getElementById('commissionDisplay').textContent = getCommissionLabel(type, val);
+            editingId = null;
+            renderTable();
+            showToast(`✅ Commission applied: ${getCommissionLabel(type, val)}`);
+        }
+        document.getElementById('applyCommissionBtn').addEventListener('click', applyCommission);
+        document.getElementById('commissionValue').addEventListener('keydown', (e) => { if (e.key === 'Enter')
+            applyCommission(); });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 8. BULK FEE EDIT
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        function bulkEdit(direction) {
+            const val = parseFloat(document.getElementById('bulkPercent').value);
+            const type = document.getElementById('bulkType').value;
+            if (isNaN(val) || val <= 0) { showToast('⚠️ Please enter a positive value.'); return; }
+            const factor = (direction === 'increase') ? 1 : -1;
+            let changed = 0;
+            programs.forEach(p => {
+                let delta;
+                if (type === 'percent') {
+                    delta = p.uniFee * (val / 100) * factor;
+                } else {
+                    delta = val * factor;
+                }
+                const newFee = Math.round(p.uniFee + delta);
+                if (newFee < 0) { showToast('⚠️ Fee cannot be negative. Skipping some.'); return; }
+                p.uniFee = newFee;
+                p.total = calcTotal(newFee, p.commissionType, p.commissionValue, p.extraCharge);
+                changed++;
+            });
+            if (changed > 0) {
+                saveProgramsToStorage();
+                editingId = null;
+                renderTable();
+                showToast(`✅ Bulk ${direction} applied to ${changed} programs.`);
+            }
+        }
+        document.getElementById('bulkApplyBtn').addEventListener('click', () => bulkEdit('increase'));
+        document.getElementById('bulkDecreaseBtn').addEventListener('click', () => bulkEdit('decrease'));
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 9. RESET UNIVERSITY FEES TO PDF VALUES
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            if (!confirm('Are you sure you want to reset all University Fees to the original PDF values? Extra Charges and Commission will remain unchanged.')) {
+                return;
+            }
+            let count = 0;
+            programs.forEach(p => {
+                const original = RAW_PROGRAMS.find(r => r.id === p.id);
+                if (original) {
+                    p.uniFee = original.uniFee;
+                    p.total = calcTotal(p.uniFee, p.commissionType, p.commissionValue, p.extraCharge);
+                    count++;
+                }
+            });
+            if (count > 0) {
+                saveProgramsToStorage();
+                editingId = null;
+                renderTable();
+                showToast(`✅ Reset ${count} programs to PDF University Fees.`);
+            } else {
+                showToast('⚠️ No programs found to reset.');
+            }
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 10. DOCUMENT FEES SAVE
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        document.getElementById('docSaveBtn').addEventListener('click', () => {
+            const d = parseFloat(document.getElementById('docDegree').value);
+            const m = parseFloat(document.getElementById('docMigration').value);
+            const p = parseFloat(document.getElementById('docProvisional').value);
+            if (isNaN(d) || isNaN(m) || isNaN(p) || d < 0 || m < 0 || p < 0) {
+                showToast('⚠️ Please enter valid positive numbers.');
+                return;
+            }
+            docFees.degree = d;
+            docFees.migration = m;
+            docFees.provisional = p;
+            saveDocFeesToStorage();
+            showToast('✅ Document charges saved successfully!');
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 11. PASSWORD CHANGE
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        document.getElementById('changePwdBtn').addEventListener('click', () => {
+            const current = document.getElementById('currentPwd').value.trim();
+            const newPwd = document.getElementById('newPwd').value.trim();
+            const confirmPwd = document.getElementById('confirmPwd').value.trim();
+
+            if (!current || !newPwd || !confirmPwd) {
+                showToast('⚠️ Please fill all password fields.');
+                return;
+            }
+            if (current !== getAdminPassword()) {
+                showToast('❌ Current password is incorrect.');
+                return;
+            }
+            if (newPwd.length < 4) {
+                showToast('⚠️ New password must be at least 4 characters.');
+                return;
+            }
+            if (newPwd !== confirmPwd) {
+                showToast('❌ New password and confirmation do not match.');
+                return;
+            }
+            setAdminPassword(newPwd);
+            document.getElementById('currentPwd').value = '';
+            document.getElementById('newPwd').value = '';
+            document.getElementById('confirmPwd').value = '';
+            showToast('✅ Password updated successfully!');
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 12. SEARCH
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderTable();
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 13. LOGIN / LOGOUT
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        const loginOverlay = document.getElementById('loginOverlay');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const loginToggleBtn = document.getElementById('loginToggleBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        function login() {
+            const entered = loginPassword.value.trim();
+            if (entered === getAdminPassword()) {
+                adminLoggedIn = true;
+                loginOverlay.classList.add('hidden');
+                loginError.style.display = 'none';
+                loginPassword.value = '';
+                renderTable();
+                showToast('🔓 Welcome Admin!');
+            } else {
+                loginError.style.display = 'block';
+                loginPassword.value = '';
+                loginPassword.focus();
+            }
+        }
+        loginBtn.addEventListener('click', login);
+        loginPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
+        loginToggleBtn.addEventListener('click', () => {
+            loginOverlay.classList.remove('hidden');
+            loginPassword.focus();
+            loginError.style.display = 'none';
+        });
+        loginOverlay.addEventListener('click', (e) => { if (e.target === loginOverlay) loginOverlay.classList.add('hidden'); });
+        logoutBtn.addEventListener('click', () => {
+            adminLoggedIn = false;
+            editingId = null;
+            renderTable();
+            showToast('👋 Logged out. Public view active.');
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 14. TOAST
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        let toastTimer = null;
+
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 15. INIT
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        loadDocFeesFromStorage();
+        buildPrograms();
+        renderSchools();
+        renderTable();
+        document.getElementById('commissionDisplay').textContent = '25%';
+        console.log('🏛️ ISBM Fee Manager loaded. Default password: isbm2025');
+    </script>
+</body>
+</html>
