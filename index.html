@@ -1,0 +1,2597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ISBM University – Fee Structure & Management Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <!-- Firebase SDK (Free Spark Plan Support) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <style>
+        /* ─── BASE & RESETS ─── */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f4f7fb;
+            color: #1a1a2e;
+            padding: 20px;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+
+        /* ─── HEADER ─── */
+        .header {
+            background: linear-gradient(135deg, #0f2b5b, #1a4a8a);
+            color: #fff;
+            padding: 24px 30px;
+            border-radius: 18px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+            box-shadow: 0 8px 28px rgba(15, 43, 91, 0.22);
+            gap: 16px;
+        }
+        .header-left h1 {
+            font-size: 23px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .header-actions .badge {
+            background: rgba(255, 255, 255, 0.16);
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-size: 13px;
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+        }
+        .header-actions .badge i {
+            margin-right: 6px;
+        }
+        .btn-login {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            color: #fff;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-login:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+        .btn-logout {
+            background: #c0392b;
+            border: none;
+            color: #fff;
+            padding: 8px 22px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-logout:hover {
+            background: #e74c3c;
+            transform: translateY(-1px);
+        }
+
+        /* ─── SPECIAL PANELS MATCHING JPG SCREENSHOT ─── */
+        .banner-card {
+            display: none;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 18px 26px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .banner-card.visible {
+            display: block;
+        }
+        .banner-card-inner {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+        .banner-left {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .accent-bar {
+            width: 4px;
+            height: 28px;
+            background: #1a73e8;
+            border-radius: 4px;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        .banner-title-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .banner-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #0f2b5b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .banner-title i.main-icon {
+            font-size: 18px;
+            color: #5c6bc0;
+        }
+        .badge-admin {
+            background: #f1f5f9;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 12px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            letter-spacing: 0.3px;
+        }
+        .banner-subtitle {
+            font-size: 13px;
+            color: #718096;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .banner-subtitle i {
+            color: #3b82f6;
+        }
+
+        /* Action buttons in right container */
+        .banner-btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-banner {
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            text-decoration: none;
+        }
+        .btn-banner:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .btn-banner:active {
+            transform: translateY(0);
+        }
+
+        /* Color classes matching JPG */
+        .btn-backup {
+            background-color: #198754; /* Green */
+        }
+        .btn-backup:hover {
+            background-color: #157347;
+        }
+        .btn-restore {
+            background-color: #e67e22; /* Yellow/Orange */
+        }
+        .btn-restore:hover {
+            background-color: #d35400;
+        }
+        .btn-clear-cloud {
+            background-color: #dc3545; /* Red */
+        }
+        .btn-clear-cloud:hover {
+            background-color: #bb2d3b;
+        }
+        .btn-change-pwd {
+            background-color: #6f42c1; /* Purple */
+        }
+        .btn-change-pwd:hover {
+            background-color: #59359a;
+        }
+        .btn-template {
+            background-color: #5a6268; /* Slate gray */
+        }
+        .btn-template:hover {
+            background-color: #4b5257;
+        }
+        .btn-export-csv {
+            background-color: #198754; /* Green */
+        }
+        .btn-export-csv:hover {
+            background-color: #157347;
+        }
+        .btn-add-prog {
+            background-color: #0f2b5b; /* Navy */
+        }
+        .btn-add-prog:hover {
+            background-color: #1a4a8a;
+        }
+
+        /* CSV Upload control */
+        .csv-upload-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #334155;
+            background: #f8fafc;
+            padding: 4px 12px;
+            border-radius: 8px;
+            border: 1px dashed #cbd5e1;
+        }
+        .csv-upload-box input[type="file"] {
+            font-size: 12.5px;
+            color: #475569;
+            cursor: pointer;
+        }
+        .csv-upload-box input[type="file"]::file-selector-button {
+            padding: 5px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            color: #1e293b;
+            transition: all 0.2s;
+        }
+        .csv-upload-box input[type="file"]::file-selector-button:hover {
+            background: #f1f5f9;
+        }
+
+        /* ─── STANDARD ADMIN PANELS ─── */
+        .admin-panel {
+            display: none;
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px 26px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px 24px;
+        }
+        .admin-panel.visible {
+            display: flex;
+        }
+        .admin-panel .panel-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: #0f2b5b;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .admin-panel .panel-title .sub {
+            font-weight: 400;
+            font-size: 12px;
+            color: #8899bb;
+            margin-left: 8px;
+        }
+        .admin-panel label {
+            font-weight: 600;
+            font-size: 13.5px;
+            color: #1a2a4a;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .admin-panel input,
+        .admin-panel select {
+            padding: 8px 14px;
+            border: 2px solid #dce3ef;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fafcff;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .admin-panel input:focus,
+        .admin-panel select:focus {
+            border-color: #1a4a8a;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(26, 74, 138, 0.08);
+        }
+        .admin-panel .btn-apply {
+            background: #0f2b5b;
+            color: #fff;
+            border: none;
+            padding: 9px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13.5px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .admin-panel .btn-apply:hover {
+            background: #1a4a8a;
+            transform: translateY(-1px);
+        }
+        .admin-panel .btn-apply.danger {
+            background: #b03a2e;
+        }
+        .admin-panel .btn-apply.danger:hover {
+            background: #c0392b;
+        }
+        .admin-panel .btn-apply.warning {
+            background: #e67e22;
+            color: #fff;
+        }
+        .admin-panel .btn-apply.warning:hover {
+            background: #d35400;
+        }
+        .admin-panel .doc-fee-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 20px;
+            align-items: center;
+        }
+        .admin-panel .doc-fee-group label {
+            font-weight: 500;
+            font-size: 13px;
+        }
+        .admin-panel .doc-fee-group input {
+            width: 100px;
+        }
+        .tag-bulk {
+            background: #fff3cd;
+            color: #856404;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .tag-individual {
+            background: #d4edda;
+            color: #155724;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* ─── COMMISSION BAR ─── */
+        .commission-bar {
+            display: none;
+            background: #fff;
+            border-radius: 16px;
+            padding: 18px 28px;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 18px 30px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .commission-bar.visible {
+            display: flex;
+        }
+        .commission-bar label {
+            font-weight: 600;
+            font-size: 14.5px;
+            color: #1a2a4a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .commission-bar label i {
+            color: #1a4a8a;
+        }
+        .commission-input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .commission-input-group input {
+            padding: 9px 14px;
+            border: 2px solid #dce3ef;
+            border-radius: 8px;
+            font-size: 14px;
+            width: 110px;
+            font-weight: 600;
+            background: #fafcff;
+        }
+        .commission-input-group input:focus {
+            border-color: #1a4a8a;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(26, 74, 138, 0.12);
+        }
+        .commission-input-group select {
+            padding: 9px 14px;
+            border: 2px solid #dce3ef;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fafcff;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .commission-input-group .btn-apply {
+            background: #0f2b5b;
+            color: #fff;
+            border: none;
+            padding: 9px 22px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .commission-input-group .btn-apply:hover {
+            background: #1a4a8a;
+            transform: scale(1.02);
+        }
+        .commission-display {
+            font-size: 14.5px;
+            background: #eef4fb;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #0f2b5b;
+            margin-left: auto;
+        }
+        .commission-display span {
+            color: #c0392b;
+        }
+
+        /* ─── TOOLBAR ─── */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 22px;
+            align-items: center;
+        }
+        .toolbar .search-box {
+            flex: 1;
+            min-width: 240px;
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 12px;
+            padding: 0 16px;
+            border: 2px solid #e2e8f0;
+            transition: 0.2s;
+        }
+        .toolbar .search-box:focus-within {
+            border-color: #1a4a8a;
+            box-shadow: 0 0 0 4px rgba(26, 74, 138, 0.08);
+        }
+        .toolbar .search-box i {
+            color: #94a3b8;
+        }
+        .toolbar .search-box input {
+            border: none;
+            padding: 12px 14px;
+            font-size: 14.5px;
+            width: 100%;
+            background: transparent;
+            font-family: inherit;
+        }
+        .toolbar .search-box input:focus {
+            outline: none;
+        }
+        .toolbar .school-filter {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .toolbar .school-filter button {
+            padding: 8px 16px;
+            border-radius: 40px;
+            border: 2px solid #e2e8f0;
+            background: #fff;
+            font-weight: 500;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #334155;
+        }
+        .toolbar .school-filter button.active {
+            background: #0f2b5b;
+            color: #fff;
+            border-color: #0f2b5b;
+        }
+        .toolbar .school-filter button:hover:not(.active) {
+            background: #eef4fb;
+        }
+
+        /* ─── TABLE ─── */
+        .table-wrap {
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e2e8f0;
+        }
+        .table-scroll {
+            overflow-x: auto;
+            padding: 2px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 860px;
+        }
+        thead {
+            background: #f1f5f9;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        thead th {
+            padding: 15px 18px;
+            text-align: left;
+            font-weight: 700;
+            font-size: 12.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #1e293b;
+            white-space: nowrap;
+        }
+        thead th:last-child {
+            text-align: center;
+        }
+        .admin-col {
+            display: none;
+        }
+        .admin-col.visible {
+            display: table-cell;
+        }
+        tbody tr {
+            border-bottom: 1px solid #f1f5f9;
+            transition: 0.15s;
+        }
+        tbody tr:hover {
+            background: #f8fafc;
+        }
+        tbody td {
+            padding: 14px 18px;
+            vertical-align: middle;
+        }
+        .col-program {
+            font-weight: 600;
+            color: #0f2b5b;
+        }
+        .col-school {
+            font-size: 12px;
+            color: #475569;
+            background: #f1f5f9;
+            padding: 4px 12px;
+            border-radius: 40px;
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .col-duration {
+            color: #334155;
+            font-weight: 500;
+        }
+        .col-uni-fee {
+            font-weight: 600;
+            color: #1a2a4a;
+        }
+        .col-extra {
+            font-weight: 600;
+            color: #0369a1;
+        }
+        .col-commission {
+            color: #dc2626;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .col-total {
+            font-weight: 700;
+            font-size: 15.5px;
+            color: #0f2b5b;
+        }
+        .col-actions {
+            text-align: center;
+            white-space: nowrap;
+        }
+        .col-actions .btn-icon {
+            background: transparent;
+            border: none;
+            padding: 6px 9px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: 0.2s;
+            color: #64748b;
+        }
+        .col-actions .btn-icon:hover {
+            background: #eef4fb;
+            color: #0f2b5b;
+        }
+        .col-actions .btn-icon.delete:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        .btn-icon.whatsapp {
+            background: transparent;
+            border: none;
+            padding: 0 8px;
+            font-size: 18px;
+            color: #25d366;
+            cursor: pointer;
+            transition: 0.2s;
+            vertical-align: middle;
+        }
+        .btn-icon.whatsapp:hover {
+            transform: scale(1.2);
+        }
+
+        /* Edit mode */
+        .edit-input {
+            width: 105px;
+            padding: 6px 10px;
+            border: 2px solid #1a4a8a;
+            border-radius: 6px;
+            font-size: 13.5px;
+            font-weight: 600;
+            background: #fafcff;
+            font-family: inherit;
+        }
+        .edit-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(26, 74, 138, 0.15);
+        }
+        .edit-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+        .edit-actions button {
+            border: none;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .edit-actions .save-edit {
+            background: #0f2b5b;
+            color: #fff;
+        }
+        .edit-actions .save-edit:hover {
+            background: #1a4a8a;
+        }
+        .edit-actions .cancel-edit {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .edit-actions .cancel-edit:hover {
+            background: #cbd5e1;
+        }
+        tr.editing-row {
+            background: #f0f7ff !important;
+            border-left: 4px solid #1a4a8a;
+        }
+        .uni-fee-readonly {
+            font-weight: 600;
+            color: #1a2a4a;
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        /* ─── MODALS ─── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            padding: 20px;
+        }
+        .modal-overlay.open {
+            display: flex;
+        }
+        .modal-box {
+            background: #fff;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            padding: 28px 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            animation: modalIn 0.22s ease;
+        }
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .modal-box .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .modal-box .modal-header h2 {
+            font-size: 19px;
+            color: #0f2b5b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-box .modal-header .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: 0.2s;
+        }
+        .modal-box .modal-header .close-modal:hover {
+            color: #1e293b;
+        }
+        .modal-box .message-preview {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 18px 20px;
+            font-size: 13.5px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            font-family: inherit;
+        }
+        .modal-box .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        .modal-box .modal-actions button {
+            flex: 1;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 130px;
+        }
+        .modal-box .modal-actions .btn-wa-send {
+            background: #25d366;
+            color: #fff;
+        }
+        .modal-box .modal-actions .btn-wa-send:hover {
+            background: #1ebd5e;
+            transform: translateY(-1px);
+        }
+        .modal-box .modal-actions .btn-copy {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .modal-box .modal-actions .btn-copy:hover {
+            background: #cbd5e1;
+        }
+
+        /* ─── MODAL FORM STYLES ─── */
+        .modal-form-group {
+            margin-bottom: 14px;
+        }
+        .modal-form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 5px;
+        }
+        .modal-form-group input,
+        .modal-form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fafcff;
+        }
+        .modal-form-group input:focus,
+        .modal-form-group select:focus {
+            border-color: #0f2b5b;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(15, 43, 91, 0.12);
+        }
+
+        /* ─── LOGIN OVERLAY ─── */
+        .login-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .login-overlay.hidden {
+            display: none;
+        }
+        .login-box {
+            background: #fff;
+            border-radius: 24px;
+            padding: 36px 32px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            animation: modalIn 0.25s ease;
+        }
+        .login-box h2 {
+            font-size: 22px;
+            margin-bottom: 6px;
+            color: #0f2b5b;
+        }
+        .login-box p {
+            color: #64748b;
+            margin-bottom: 24px;
+            font-size: 13.5px;
+        }
+        .login-box label {
+            font-weight: 600;
+            font-size: 13.5px;
+            display: block;
+            margin-bottom: 6px;
+            color: #1e293b;
+        }
+        .login-box input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: 0.2s;
+            margin-bottom: 18px;
+            background: #fafcff;
+        }
+        .login-box input[type="password"]:focus {
+            border-color: #1a4a8a;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(26, 74, 138, 0.1);
+        }
+        .login-box .login-btn {
+            width: 100%;
+            padding: 13px;
+            background: #0f2b5b;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .login-box .login-btn:hover {
+            background: #1a4a8a;
+            transform: scale(1.01);
+        }
+        .login-box .login-error {
+            color: #dc2626;
+            font-size: 13.5px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* ─── TOAST NOTIFICATION ─── */
+        .toast {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #0f2b5b;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 13.5px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 0.3s ease;
+            pointer-events: none;
+            z-index: 1100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ─── EMPTY STATE ─── */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: #64748b;
+        }
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+        .empty-state h3 {
+            font-size: 19px;
+            color: #0f2b5b;
+            margin-bottom: 8px;
+        }
+        .empty-state p {
+            font-size: 14px;
+            max-width: 520px;
+            margin: 0 auto 20px auto;
+            line-height: 1.6;
+        }
+        .empty-state-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ─── RESPONSIVE ─── */
+        @media (max-width: 860px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .banner-card-inner {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .banner-btn-group {
+                justify-content: flex-start;
+            }
+            .admin-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .toolbar .school-filter {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-left">
+                <h1>🏛️ ISBM University Raipur Chhattisgarh Fees Structure</h1>
+            </div>
+            <div class="header-actions">
+                <span class="badge"><i class="fas fa-graduation-cap"></i> <span id="programCount">0</span> Programs</span>
+                <span class="badge"><i class="fas fa-university"></i> <span id="schoolCount">0</span> Schools</span>
+                <button id="loginToggleBtn" class="btn-login"><i class="fas fa-lock"></i> Admin Login</button>
+                <button id="logoutBtn" class="btn-logout" style="display:none;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </header>
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- OPTION 1 FROM JPEG: CLOUD & BACKUP MANAGEMENT             -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <div class="banner-card" id="cloudBackupPanel">
+            <div class="banner-card-inner">
+                <div class="banner-left">
+                    <div class="accent-bar"></div>
+                    <div class="banner-title-wrap">
+                        <div class="banner-title">
+                            <i class="fas fa-save main-icon" style="color:#6f42c1;"></i>
+                            <span>Cloud & Backup Management</span>
+                            <span class="badge-admin">Admin</span>
+                        </div>
+                        <div class="banner-subtitle">
+                            <i class="fas fa-cloud"></i>
+                            <span>All transactions and fee records are saved in real-time in Google Firebase Cloud Database.</span>
+                            <span id="firebaseStatusBadge" style="background:#f1f5f9; color:#64748b; font-size:11px; padding:2px 10px; border-radius:12px; margin-left:6px; font-weight:600;"><i class="fas fa-circle" style="font-size:7px; vertical-align:middle; color:#94a3b8;"></i> Local Mode</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="banner-btn-group">
+                    <button class="btn-banner btn-backup" id="btnBackupJson" title="Export full data to JSON">
+                        <i class="fas fa-save"></i> Backup (Export JSON)
+                    </button>
+                    <button class="btn-banner btn-restore" id="btnRestoreJson" title="Restore data from JSON file">
+                        <i class="fas fa-folder-open"></i> Restore (Import JSON)
+                    </button>
+                    <button class="btn-banner btn-clear-cloud" id="btnClearCloud" title="Completely clear all data from the database">
+                        <i class="fas fa-database"></i> Clear All Cloud Data
+                    </button>
+                    <button class="btn-banner" id="btnFirebaseConfigOpen" title="Connect Google Firebase Cloud (Free)" style="background-color: #ff9100;">
+                        <i class="fas fa-fire"></i> Firebase Cloud
+                    </button>
+                    <button class="btn-banner btn-change-pwd" id="btnChangePasswordOpen" title="Change Admin Password">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hidden input for JSON restore -->
+        <input type="file" id="jsonFileInput" accept=".json" style="display:none;" />
+
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!-- OPTION 2 FROM JPEG: CSV IMPORT / EXPORT                   -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <div class="banner-card" id="csvManagementPanel">
+            <div class="banner-card-inner">
+                <div class="banner-left">
+                    <div class="accent-bar"></div>
+                    <div class="banner-title-wrap">
+                        <div class="banner-title">
+                            <i class="fas fa-folder main-icon" style="color:#f39c12;"></i>
+                            <span>CSV Import / Export</span>
+                            <span class="badge-admin">Admin</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="banner-btn-group">
+                    <button class="btn-banner btn-template" id="btnDownloadTemplate" title="Download sample CSV template">
+                        <i class="fas fa-file-csv"></i> Download CSV Template
+                    </button>
+                    <button class="btn-banner btn-export-csv" id="btnExportCsv" title="Export current fees table as CSV">
+                        <i class="fas fa-download"></i> Export CSV
+                    </button>
+                    <div class="csv-upload-box">
+                        <label for="csvFileInput" style="cursor:pointer; display:flex; align-items:center; gap:6px;">
+                            <span>Upload CSV to Cloud:</span>
+                        </label>
+                        <input type="file" id="csvFileInput" accept=".csv" />
+                    </div>
+                    <button class="btn-banner btn-add-prog" id="btnAddProgramOpen" title="Add a new program manually">
+                        <i class="fas fa-plus"></i> Add Program
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ADMIN PANEL: BULK FEE EDIT -->
+        <div class="admin-panel" id="bulkEditPanel">
+            <div class="panel-title">
+                <i class="fas fa-layer-group"></i> Bulk Edit — University Fee
+                <span class="sub">(changes <strong>base fee</strong> of ALL programs)</span>
+                <span class="tag-bulk">BULK</span>
+            </div>
+            <label>Adjust by</label>
+            <input type="number" id="bulkPercent" value="10" step="0.5" style="width:80px;" />
+            <select id="bulkType">
+                <option value="percent">%</option>
+                <option value="fixed">₹ Fixed</option>
+            </select>
+            <button class="btn-apply" id="bulkApplyBtn"><i class="fas fa-arrow-up"></i> Increase All</button>
+            <button class="btn-apply danger" id="bulkDecreaseBtn"><i class="fas fa-arrow-down"></i> Decrease All</button>
+            <span class="text-muted" style="margin-left:auto; font-size:12.5px; color:#64748b;">Changes university fee of every program</span>
+        </div>
+
+        <!-- ADMIN PANEL: RESET TO PDF VALUES -->
+        <div class="admin-panel" id="resetPanel">
+            <div class="panel-title">
+                <i class="fas fa-undo-alt"></i> Reset University Fees to PDF Values
+                <span class="sub">(restores original 40 programs and base fees)</span>
+            </div>
+            <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center;">
+                <button class="btn-apply warning" id="resetBtn"><i class="fas fa-history"></i> Reset All University Fees</button>
+                <span style="font-size:12.5px; color:#64748b;">Restores original PDF values. Extra Charges and Commission will remain intact.</span>
+            </div>
+        </div>
+
+        <!-- ADMIN PANEL: INDIVIDUAL EDIT HINT -->
+        <div class="admin-panel" id="individualHint" style="border-left:4px solid #1a4a8a; padding:12px 24px; background:#f8fafc;">
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; width:100%;">
+                <span><i class="fas fa-pen" style="color:#1a4a8a;"></i> <strong>Row Actions:</strong></span>
+                <span>Click <span style="background:#eef4fb; padding:2px 8px; border-radius:6px; font-weight:600;">✎</span> to edit fee or <span style="background:#fee2e2; color:#dc2626; padding:2px 8px; border-radius:6px; font-weight:600;">🗑️</span> to delete a program.</span>
+                <span class="tag-individual">MANAGEMENT</span>
+            </div>
+        </div>
+
+        <!-- ADMIN PANEL: DOCUMENT CHARGES -->
+        <div class="admin-panel" id="docFeePanel">
+            <div class="panel-title"><i class="fas fa-file-invoice"></i> Additional Document Charges</div>
+            <div class="doc-fee-group">
+                <label>Degree Cert: <input type="number" id="docDegree" value="10500" step="500" /></label>
+                <label>Migration Cert: <input type="number" id="docMigration" value="6500" step="500" /></label>
+                <label>Provisional Degree: <input type="number" id="docProvisional" value="7500" step="500" /></label>
+                <button class="btn-apply" id="docSaveBtn"><i class="fas fa-save"></i> Save Documents</button>
+            </div>
+        </div>
+
+        <!-- COMMISSION BAR -->
+        <div class="commission-bar" id="commissionBar">
+            <label><i class="fas fa-percent"></i> Commission / Service Charge</label>
+            <div class="commission-input-group">
+                <input type="number" id="commissionValue" value="25" min="0" step="0.5" />
+                <select id="commissionType">
+                    <option value="percentage">%</option>
+                    <option value="fixed">₹ Fixed</option>
+                </select>
+                <button class="btn-apply" id="applyCommissionBtn"><i class="fas fa-sync-alt"></i> Apply</button>
+            </div>
+            <div class="commission-display">
+                <i class="fas fa-calculator"></i> &nbsp;Commission: <span id="commissionDisplay">25%</span>
+                &nbsp;·&nbsp; <span id="totalWithCommissionLabel">₹0</span> avg. total
+            </div>
+        </div>
+
+        <!-- TOOLBAR (Search & Filter) -->
+        <div class="toolbar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search program, school, eligibility..." />
+            </div>
+            <div class="school-filter" id="schoolFilter">
+                <button class="active" data-school="all">All</button>
+            </div>
+        </div>
+
+        <!-- TABLE WRAPPER -->
+        <div class="table-wrap">
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="min-width:160px;">Program</th>
+                            <th style="min-width:130px;">School</th>
+                            <th>Duration</th>
+                            <th>Eligibility</th>
+                            <th class="admin-col">Univ. Fee (₹)</th>
+                            <th class="admin-col">Extra Charge (₹)</th>
+                            <th class="admin-col">Commission</th>
+                            <th>Total Fees</th>
+                            <th class="admin-col" style="text-align:center;min-width:120px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Dynamic content populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div style="margin-top:22px;text-align:center;font-size:13px;color:#8899bb;">
+            <i class="fas fa-edit"></i> Click <strong>✎</strong> to edit &nbsp;·&nbsp;
+            <i class="fas fa-trash-alt" style="color:#dc3545;"></i> Click <strong>🗑️</strong> to delete &nbsp;·&nbsp;
+            <i class="fab fa-whatsapp" style="color:#25d366;"></i> Click <strong>💬</strong> to share quotation via WhatsApp
+        </div>
+    </div>
+
+    <!-- ─── CHANGE PASSWORD MODAL ─── -->
+    <div class="modal-overlay" id="passwordModal">
+        <div class="modal-box" style="max-width: 440px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-key" style="color:#6f42c1;"></i> Change Admin Password</h2>
+                <button class="close-modal" id="closePasswordModalBtn">&times;</button>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <div class="modal-form-group">
+                    <label>Current Password</label>
+                    <input type="password" id="modalCurrentPwd" placeholder="Enter current password" />
+                </div>
+                <div class="modal-form-group">
+                    <label>New Password</label>
+                    <input type="password" id="modalNewPwd" placeholder="Enter new password (min 4 chars)" />
+                </div>
+                <div class="modal-form-group">
+                    <label>Confirm New Password</label>
+                    <input type="password" id="modalConfirmPwd" placeholder="Confirm new password" />
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-banner btn-change-pwd" id="modalSavePwdBtn" style="justify-content:center; width:100%; padding:12px;">
+                    <i class="fas fa-check"></i> Update Password
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── ADD PROGRAM MODAL ─── -->
+    <div class="modal-overlay" id="addProgramModal">
+        <div class="modal-box" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle" style="color:#0f2b5b;"></i> Add New Program</h2>
+                <button class="close-modal" id="closeAddProgramModalBtn">&times;</button>
+            </div>
+            <div>
+                <div class="modal-form-group">
+                    <label>Program / Course Name *</label>
+                    <input type="text" id="newProgName" placeholder="e.g. MBA, B.Tech, BCA" />
+                </div>
+                <div class="modal-form-group">
+                    <label>School / Department *</label>
+                    <input type="text" id="newProgSchool" placeholder="e.g. Management, Information Technology" />
+                </div>
+                <div class="modal-form-group" style="display:flex; gap:12px;">
+                    <div style="flex:1;">
+                        <label>Duration *</label>
+                        <input type="text" id="newProgDuration" placeholder="e.g. 2 Sem, 3 Years" />
+                    </div>
+                    <div style="flex:1;">
+                        <label>Eligibility *</label>
+                        <input type="text" id="newProgElig" placeholder="e.g. Graduation, 12th" />
+                    </div>
+                </div>
+                <div class="modal-form-group" style="display:flex; gap:12px;">
+                    <div style="flex:1;">
+                        <label>University Fee (₹) *</label>
+                        <input type="number" id="newProgFee" placeholder="0" min="0" step="500" />
+                    </div>
+                    <div style="flex:1;">
+                        <label>Extra Charge (₹)</label>
+                        <input type="number" id="newProgExtra" placeholder="0" min="0" step="100" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-banner btn-backup" id="saveNewProgramBtn" style="justify-content:center; width:100%; padding:12px;">
+                    <i class="fas fa-save"></i> Save Program
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── FIREBASE CLOUD CONFIG MODAL ─── -->
+    <div class="modal-overlay" id="firebaseModal">
+        <div class="modal-box" style="max-width: 520px;">
+            <div class="modal-header">
+                <h2><i class="fas fa-fire" style="color:#ff9100;"></i> Connect Google Firebase (Free)</h2>
+                <button class="close-modal" id="closeFirebaseModalBtn">&times;</button>
+            </div>
+            <div>
+                <p style="font-size:13px; color:#64748b; margin-bottom:14px; line-height:1.5;">
+                    Live real-time sync with Google Firebase (100% Free Spark Plan). Get your config from <a href="https://console.firebase.google.com/" target="_blank" style="color:#1a73e8; font-weight:600;">console.firebase.google.com</a> ➔ Project Settings ➔ Your apps ➔ Config.
+                </p>
+                <div class="modal-form-group">
+                    <label>Paste Firebase Config JSON / Object</label>
+                    <textarea id="firebaseConfigInput" rows="7" style="width:100%; padding:10px 14px; border:2px solid #e2e8f0; border-radius:8px; font-size:12.5px; font-family:monospace; background:#fafcff;" placeholder='{&#10;  "apiKey": "AIza...",&#10;  "authDomain": "your-app.firebaseapp.com",&#10;  "projectId": "your-app",&#10;  "storageBucket": "your-app.appspot.com",&#10;  "messagingSenderId": "...",&#10;  "appId": "..."&#10;}'></textarea>
+                </div>
+            </div>
+            <div class="modal-actions" style="margin-top:14px;">
+                <button class="btn-banner" id="saveFirebaseConfigBtn" style="justify-content:center; padding:12px; background-color:#ff9100; color:#fff;">
+                    <i class="fas fa-link"></i> Connect &amp; Sync Cloud
+                </button>
+                <button class="btn-banner btn-template" id="disconnectFirebaseBtn" style="justify-content:center; padding:12px;">
+                    <i class="fas fa-unlink"></i> Disconnect (Use Local)
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── WHATSAPP MODAL ─── -->
+    <div class="modal-overlay" id="waModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2><i class="fab fa-whatsapp" style="color:#25d366;"></i> Share via WhatsApp</h2>
+                <button class="close-modal" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="message-preview" id="waMessagePreview"></div>
+            <div class="modal-actions">
+                <button class="btn-wa-send" id="waSendBtn"><i class="fab fa-whatsapp"></i> Send to WhatsApp</button>
+                <button class="btn-copy" id="waCopyBtn"><i class="fas fa-copy"></i> Copy Message</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── LOGIN OVERLAY ─── -->
+    <div class="login-overlay hidden" id="loginOverlay">
+        <div class="login-box">
+            <h2>🔐 Admin Login</h2>
+            <p>Enter your admin password to manage and edit fees.</p>
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" placeholder="Enter password (default: isbm2025)" autofocus />
+            <button class="login-btn" id="loginBtn">Login</button>
+            <div class="login-error" id="loginError">Incorrect password. Please try again.</div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 1. DATA (Original PDF values)
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        const RAW_PROGRAMS = [
+            { id: 1, program: 'MA', school: 'Arts & Humanities', duration: '2 Sem', eligibility: 'Graduation', uniFee: 22500 },
+            { id: 2, program: 'MSW', school: 'Arts & Humanities', duration: '2 Sem', eligibility: 'Graduation / 12th', uniFee: 22500 },
+            { id: 3, program: 'BA', school: 'Arts & Humanities', duration: '3 Sem', eligibility: '12th or equivalent', uniFee: 22500 },
+            { id: 4, program: 'BA Hons', school: 'Arts & Humanities', duration: '3 Sem', eligibility: '12th or equivalent', uniFee: 27000 },
+            { id: 5, program: 'BSW', school: 'Arts & Humanities', duration: '3 Sem', eligibility: '12th or equivalent', uniFee: 22500 },
+            { id: 6, program: 'PG Diploma Rural Dev.', school: 'Commerce', duration: '1 Sem', eligibility: 'Graduation', uniFee: 37500 },
+            { id: 7, program: 'M.Com', school: 'Commerce', duration: '2 Sem', eligibility: 'Graduation', uniFee: 22500 },
+            { id: 8, program: 'B.Com (CA)', school: 'Commerce', duration: '3 Sem', eligibility: '12th or equivalent', uniFee: 34500 },
+            { id: 9, program: 'B.Com Hons', school: 'Commerce', duration: '3 Sem', eligibility: '12th or equivalent', uniFee: 34550 },
+            { id: 10, program: 'B.Com', school: 'Commerce', duration: '3 Sem', eligibility: '12th or equivalent', uniFee: 30000 },
+            { id: 11, program: 'DBA', school: 'Management', duration: '1 Annual', eligibility: '12th or equivalent', uniFee: 16500 },
+            { id: 12, program: 'BBA', school: 'Management', duration: '3 Sem', eligibility: '12th or equivalent', uniFee: 52500 },
+            { id: 13, program: 'MBA', school: 'Management', duration: '2 Sem', eligibility: 'Graduation', uniFee: 60000 },
+            { id: 14, program: 'EMBA', school: 'Management', duration: '1.5 Sem', eligibility: 'Graduation', uniFee: 45000 },
+            { id: 15, program: 'PGDBA', school: 'Management', duration: '1 Annual', eligibility: 'Graduation', uniFee: 30000 },
+            { id: 16, program: 'B.LIB', school: 'Library & Info. Science', duration: '1 Annual', eligibility: 'Graduation', uniFee: 15000 },
+            { id: 17, program: 'M.LIB', school: 'Library & Info. Science', duration: '1 Sem', eligibility: 'B.Lib', uniFee: 18000 },
+            { id: 18, program: 'BSc PCM/ZBC', school: 'Science', duration: '3 Sem', eligibility: '12th with Science', uniFee: 31500 },
+            { id: 19, program: 'BSc PCB', school: 'Science', duration: '3 Sem', eligibility: '12th with Science', uniFee: 31500 },
+            { id: 20, program: 'B.Sc (Hons) Fashion Design', school: 'Design', duration: '3 Sem', eligibility: '12th or equivalent', uniFee: 52500 },
+            { id: 21, program: 'B.Sc (Hons) Interior Design', school: 'Design', duration: '3 Sem', eligibility: '12th or equivalent', uniFee: 52500 },
+            { id: 22, program: 'DFD', school: 'Design', duration: '1 Sem', eligibility: '12th or equivalent', uniFee: 24000 },
+            { id: 23, program: 'MJMC', school: 'Journalism & Mass Comm.', duration: '2 Sem', eligibility: 'Graduation', uniFee: 30000 },
+            { id: 24, program: 'BJMC', school: 'Journalism & Mass Comm.', duration: '3 Sem', eligibility: '12th or equivalent', uniFee: 37500 },
+            { id: 25, program: 'LLM', school: 'Law', duration: '2 Sem', eligibility: 'LLB', uniFee: 45000 },
+            { id: 26, program: 'BHCMT', school: 'Hotel Management', duration: '4 Sem', eligibility: '12th or equivalent', uniFee: 60000 },
+            { id: 27, program: 'DHCMT', school: 'Hotel Management', duration: '3 Sem', eligibility: '12th or equivalent', uniFee: 24000 },
+            { id: 28, program: 'M.Sc. IT', school: 'Information Technology', duration: '2 Sem', eligibility: '12th Science Stream', uniFee: 55500 },
+            { id: 29, program: 'M.Sc. CS', school: 'Information Technology', duration: '2 Sem', eligibility: '12th Science Stream', uniFee: 55500 },
+            { id: 30, program: 'MCA', school: 'Information Technology', duration: '3 Sem', eligibility: 'Graduation', uniFee: 57000 },
+            { id: 31, program: 'B.Sc. IT', school: 'Information Technology', duration: '3 Sem', eligibility: '12th Science Stream', uniFee: 52500 },
+            { id: 32, program: 'B.Sc. CS', school: 'Information Technology', duration: '3 Sem', eligibility: '12th Science Stream', uniFee: 52500 },
+            { id: 33, program: 'BCA', school: 'Information Technology', duration: '3 Sem', eligibility: '12th or equivalent', uniFee: 52500 },
+            { id: 34, program: 'PGDCA', school: 'Information Technology', duration: '1 Annual', eligibility: 'Graduation', uniFee: 12500 },
+            { id: 35, program: 'DCA', school: 'Information Technology', duration: '1 Annual', eligibility: '12th or equivalent', uniFee: 10625 },
+            { id: 36, program: 'Diploma Eng', school: 'Engineering & Technology', duration: '3 Sem', eligibility: '10th', uniFee: 67500 },
+            { id: 37, program: 'Diploma Eng (Lateral)', school: 'Engineering & Technology', duration: '3 Sem', eligibility: '10+2 PCM+ITI', uniFee: 52500 },
+            { id: 38, program: 'B.Tech', school: 'Engineering & Technology', duration: '4 Sem', eligibility: '10+2 PCM', uniFee: 165000 },
+            { id: 39, program: 'B.Tech (Lateral)', school: 'Engineering & Technology', duration: '3 Sem', eligibility: 'Diploma in Engg', uniFee: 135000 },
+            { id: 40, program: 'M.Tech', school: 'Engineering & Technology', duration: '2 Sem', eligibility: 'Graduation', uniFee: 105000 },
+        ];
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 2. STATE
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        let programs = [];
+        let commissionType = 'percentage';
+        let commissionValue = 25;
+        let currentSchoolFilter = 'all';
+        let searchQuery = '';
+        let editingId = null;
+        let adminLoggedIn = false;
+        let docFees = { degree: 10500, migration: 6500, provisional: 7500 };
+
+        // Admin password
+        function getAdminPassword() {
+            return localStorage.getItem('admin_password') || 'isbm2025';
+        }
+        function setAdminPassword(newPwd) {
+            localStorage.setItem('admin_password', newPwd);
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 3. HELPERS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        function calcTotal(uniFee, type, val, extra) {
+            const fee = parseFloat(uniFee) || 0;
+            const extraCharge = parseFloat(extra) || 0;
+            const commVal = parseFloat(val) || 0;
+            let commissionAmount = 0;
+            if (type === 'percentage') {
+                commissionAmount = fee * (commVal / 100);
+            } else {
+                commissionAmount = commVal;
+            }
+            return Math.round(fee + commissionAmount + extraCharge);
+        }
+
+        function formatCurrency(n) {
+            return '₹' + Number(n || 0).toLocaleString('en-IN');
+        }
+
+        function getCommissionLabel(type, val) {
+            if (type === 'percentage') return (val || 0) + '%';
+            return '₹' + Number(val || 0).toLocaleString('en-IN');
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 4. STORAGE PERSISTENCE (100% RELIABLE)
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        function loadProgramsFromStorage() {
+            const stored = localStorage.getItem('isbm_programs');
+            // If the user explicitly cleared data, stored will be "[]", which must return []
+            if (stored !== null) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed)) {
+                        return parsed;
+                    }
+                } catch (e) {
+                    console.error('Error reading localStorage programs:', e);
+                }
+            }
+            // First time ever opening app: initialize default PDF values
+            return RAW_PROGRAMS.map(r => ({
+                ...r,
+                extraCharge: 0,
+                commissionType: commissionType,
+                commissionValue: commissionValue,
+                total: calcTotal(r.uniFee, commissionType, commissionValue, 0)
+            }));
+        }
+
+        function saveProgramsToStorage() {
+            localStorage.setItem('isbm_programs', JSON.stringify(programs));
+            if (typeof syncToFirebase === 'function') syncToFirebase();
+        }
+
+        function loadDocFeesFromStorage() {
+            const stored = localStorage.getItem('isbm_docfees');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (parsed.degree !== undefined) docFees = parsed;
+                } catch (e) { /* ignore */ }
+            }
+            document.getElementById('docDegree').value = docFees.degree;
+            document.getElementById('docMigration').value = docFees.migration;
+            document.getElementById('docProvisional').value = docFees.provisional;
+        }
+
+        function saveDocFeesToStorage() {
+            localStorage.setItem('isbm_docfees', JSON.stringify(docFees));
+            if (typeof syncToFirebase === 'function') syncToFirebase();
+        }
+
+        function loadCommissionFromStorage() {
+            const val = localStorage.getItem('isbm_commission_val');
+            const type = localStorage.getItem('isbm_commission_type');
+            if (val !== null) commissionValue = parseFloat(val);
+            if (type !== null) commissionType = type;
+            document.getElementById('commissionValue').value = commissionValue;
+            document.getElementById('commissionType').value = commissionType;
+        }
+
+        function saveCommissionToStorage() {
+            localStorage.setItem('isbm_commission_val', commissionValue);
+            localStorage.setItem('isbm_commission_type', commissionType);
+            if (typeof syncToFirebase === 'function') syncToFirebase();
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 5. BUILD & RENDER
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        function buildPrograms() {
+            const loaded = loadProgramsFromStorage();
+            programs = loaded.map(p => {
+                const extra = p.extraCharge || 0;
+                const total = calcTotal(p.uniFee, commissionType, commissionValue, extra);
+                return { ...p, commissionType, commissionValue, total, extraCharge: extra };
+            });
+        }
+
+        function getFiltered() {
+            let list = programs;
+            if (currentSchoolFilter !== 'all') {
+                list = list.filter(p => p.school === currentSchoolFilter);
+            }
+            if (searchQuery.trim()) {
+                const q = searchQuery.trim().toLowerCase();
+                list = list.filter(p =>
+                    (p.program && p.program.toLowerCase().includes(q)) ||
+                    (p.school && p.school.toLowerCase().includes(q)) ||
+                    (p.eligibility && p.eligibility.toLowerCase().includes(q))
+                );
+            }
+            return list;
+        }
+
+        function renderSchools() {
+            const schools = [...new Set(programs.map(p => p.school))].filter(Boolean).sort();
+            const container = document.getElementById('schoolFilter');
+            container.innerHTML = '';
+
+            const allBtn = document.createElement('button');
+            allBtn.dataset.school = 'all';
+            allBtn.textContent = 'All';
+            if (currentSchoolFilter === 'all') allBtn.classList.add('active');
+            allBtn.addEventListener('click', function() {
+                document.querySelectorAll('.school-filter button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentSchoolFilter = 'all';
+                renderTable();
+            });
+            container.appendChild(allBtn);
+
+            schools.forEach(s => {
+                const btn = document.createElement('button');
+                btn.dataset.school = s;
+                btn.textContent = s;
+                if (currentSchoolFilter === s) btn.classList.add('active');
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.school-filter button').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentSchoolFilter = s;
+                    renderTable();
+                });
+                container.appendChild(btn);
+            });
+            document.getElementById('schoolCount').textContent = schools.length;
+        }
+
+        function renderTable() {
+            const filtered = getFiltered();
+            const tbody = document.getElementById('tableBody');
+
+            // Admin columns toggle
+            const adminCols = document.querySelectorAll('.admin-col');
+            adminCols.forEach(el => el.classList.toggle('visible', adminLoggedIn));
+
+            // Admin Panels toggle
+            document.getElementById('cloudBackupPanel').classList.toggle('visible', adminLoggedIn);
+            document.getElementById('csvManagementPanel').classList.toggle('visible', adminLoggedIn);
+            document.getElementById('bulkEditPanel').classList.toggle('visible', adminLoggedIn);
+            document.getElementById('resetPanel').classList.toggle('visible', adminLoggedIn);
+            document.getElementById('individualHint').classList.toggle('visible', adminLoggedIn);
+            document.getElementById('docFeePanel').classList.toggle('visible', adminLoggedIn);
+            document.getElementById('commissionBar').classList.toggle('visible', adminLoggedIn);
+
+            document.getElementById('loginToggleBtn').style.display = adminLoggedIn ? 'none' : 'inline-flex';
+            document.getElementById('logoutBtn').style.display = adminLoggedIn ? 'inline-flex' : 'none';
+
+            // Empty state handling
+            if (filtered.length === 0) {
+                if (programs.length === 0) {
+                    // Truly empty database (after Clear All Data)
+                    tbody.innerHTML = `<tr><td colspan="9">
+                        <div class="empty-state">
+                            <i class="fas fa-trash-alt" style="color: #dc3545;"></i>
+                            <h3>All Data Cleared / सर्व डेटा क्लिअर केला आहे</h3>
+                            <p>There are currently no programs in the database (0 Programs). You can upload your own CSV file or restore the original 40 programs anytime.</p>
+                            <div class="empty-state-actions">
+                                <button class="btn-banner btn-restore" id="emptyRestoreBtn">
+                                    <i class="fas fa-undo-alt"></i> Restore Default 40 Programs
+                                </button>
+                                <button class="btn-banner btn-template" id="emptyUploadBtn">
+                                    <i class="fas fa-file-upload"></i> Upload CSV File
+                                </button>
+                            </div>
+                        </div>
+                    </td></tr>`;
+                    document.getElementById('emptyRestoreBtn')?.addEventListener('click', restoreDefaultPrograms);
+                    document.getElementById('emptyUploadBtn')?.addEventListener('click', () => {
+                        if (!adminLoggedIn) {
+                            showToast('⚠️ Please login as Admin first to upload CSV.');
+                            loginOverlay.classList.remove('hidden');
+                        } else {
+                            document.getElementById('csvFileInput').click();
+                        }
+                    });
+                } else {
+                    // Filter/search empty
+                    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><i class="fas fa-search" style="color:#94a3b8;"></i><p>No programs match your search or filter.</p></div></td></tr>`;
+                }
+                document.getElementById('programCount').textContent = '0';
+                document.getElementById('totalWithCommissionLabel').textContent = '₹0';
+                return;
+            }
+
+            let html = '';
+            let totalSum = 0;
+            filtered.forEach(p => {
+                totalSum += p.total;
+                const isEditing = (editingId === p.id && adminLoggedIn);
+
+                const totalCell = `<td class="col-total">${formatCurrency(p.total)} <button class="btn-icon whatsapp" data-id="${p.id}" title="Share via WhatsApp"><i class="fab fa-whatsapp"></i></button></td>`;
+
+                let uniFeeDisplay = '', extraDisplay = '', commissionDisplay = '', actionsHtml = '';
+
+                if (adminLoggedIn) {
+                    if (isEditing) {
+                        uniFeeDisplay = `<input class="edit-input" type="number" id="editUniFee_${p.id}" value="${p.uniFee}" min="0" step="500" />`;
+                        extraDisplay = `<input class="edit-input" type="number" id="editExtra_${p.id}" value="${p.extraCharge || 0}" min="0" step="100" />`;
+                        actionsHtml = `<div class="edit-actions">
+                            <button class="save-edit" data-id="${p.id}" title="Save"><i class="fas fa-check"></i></button>
+                            <button class="cancel-edit" data-id="${p.id}" title="Cancel"><i class="fas fa-times"></i></button>
+                        </div>`;
+                    } else {
+                        uniFeeDisplay = `<span class="uni-fee-readonly">${formatCurrency(p.uniFee)}</span>`;
+                        extraDisplay = formatCurrency(p.extraCharge || 0);
+                        actionsHtml = `
+                            <button class="btn-icon edit" data-id="${p.id}" title="Edit University Fee & Extra Charge"><i class="fas fa-pen"></i></button>
+                            <button class="btn-icon delete" data-id="${p.id}" title="Delete Program"><i class="fas fa-trash-alt" style="color:#dc3545;"></i></button>
+                        `;
+                    }
+                    commissionDisplay = getCommissionLabel(p.commissionType, p.commissionValue);
+                }
+
+                const rowClass = isEditing ? 'editing-row' : '';
+                html += `<tr class="${rowClass}">
+                    <td class="col-program">${p.program}</td>
+                    <td><span class="col-school">${p.school}</span></td>
+                    <td class="col-duration">${p.duration}</td>
+                    <td>${p.eligibility}</td>
+                    ${adminLoggedIn ? `
+                        <td class="col-uni-fee admin-col visible">${uniFeeDisplay}</td>
+                        <td class="col-extra admin-col visible">${extraDisplay}</td>
+                        <td class="col-commission admin-col visible">${commissionDisplay}</td>
+                    ` : ''}
+                    ${totalCell}
+                    ${adminLoggedIn ? `<td class="col-actions admin-col visible">${actionsHtml}</td>` : ''}
+                </tr>`;
+            });
+
+            tbody.innerHTML = html;
+            document.getElementById('programCount').textContent = filtered.length;
+
+            if (adminLoggedIn) {
+                // Edit button
+                tbody.querySelectorAll('.btn-icon.edit').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        editingId = parseInt(btn.dataset.id);
+                        renderTable();
+                    });
+                });
+
+                // Delete button
+                tbody.querySelectorAll('.btn-icon.delete').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = parseInt(btn.dataset.id);
+                        const prog = programs.find(p => p.id === id);
+                        if (!prog) return;
+                        if (confirm(`⚠️ Are you sure you want to delete "${prog.program}"?`)) {
+                            programs = programs.filter(p => p.id !== id);
+                            saveProgramsToStorage();
+                            renderSchools();
+                            renderTable();
+                            showToast(`🗑️ "${prog.program}" deleted successfully.`);
+                        }
+                    });
+                });
+
+                // Save edit
+                tbody.querySelectorAll('.save-edit').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = parseInt(btn.dataset.id);
+                        const uniInput = document.getElementById(`editUniFee_${id}`);
+                        const extraInput = document.getElementById(`editExtra_${id}`);
+                        if (!uniInput || !extraInput) return;
+
+                        const newUni = parseFloat(uniInput.value);
+                        const newExtra = parseFloat(extraInput.value);
+
+                        if (isNaN(newUni) || newUni < 0) {
+                            showToast('⚠️ Please enter a valid University Fee.');
+                            return;
+                        }
+                        if (isNaN(newExtra) || newExtra < 0) {
+                            showToast('⚠️ Please enter a valid Extra Charge.');
+                            return;
+                        }
+
+                        const prog = programs.find(p => p.id === id);
+                        if (prog) {
+                            prog.uniFee = newUni;
+                            prog.extraCharge = newExtra;
+                            prog.total = calcTotal(newUni, commissionType, commissionValue, newExtra);
+                            saveProgramsToStorage();
+                            showToast(`✅ Updated "${prog.program}" successfully!`);
+                        }
+                        editingId = null;
+                        renderTable();
+                    });
+                });
+
+                // Cancel edit
+                tbody.querySelectorAll('.cancel-edit').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        editingId = null;
+                        renderTable();
+                    });
+                });
+            }
+
+            // WhatsApp click
+            tbody.querySelectorAll('.btn-icon.whatsapp').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.dataset.id);
+                    const prog = programs.find(p => p.id === id);
+                    if (prog) openWhatsAppModal(prog);
+                });
+            });
+
+            const avg = filtered.length ? Math.round(totalSum / filtered.length) : 0;
+            document.getElementById('totalWithCommissionLabel').textContent = formatCurrency(avg);
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 6. CLEAR ALL CLOUD DATA (TRULY EMPTIES DATA)
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        document.getElementById('btnClearCloud').addEventListener('click', () => {
+            const confirmed = confirm('⚠️ Are you sure you want to clear ALL data?\n\nThis will completely remove all programs from the table and storage so you can start fresh or upload your own CSV.\n\n(तुम्हाला नक्की सर्व डेटा क्लिअर करायचा आहे का?)');
+            if (confirmed) {
+                programs = [];
+                editingId = null;
+                saveProgramsToStorage();
+                renderSchools();
+                renderTable();
+                showToast('🗑️ All data cleared successfully! (सर्व डेटा क्लिअर झाला आहे)');
+            }
+        });
+
+        // Restore Default Programs Function
+        function restoreDefaultPrograms() {
+            programs = RAW_PROGRAMS.map(r => {
+                const extra = 0;
+                const total = calcTotal(r.uniFee, commissionType, commissionValue, extra);
+                return {
+                    ...r,
+                    extraCharge: extra,
+                    commissionType: commissionType,
+                    commissionValue: commissionValue,
+                    total: total
+                };
+            });
+            saveProgramsToStorage();
+            renderSchools();
+            renderTable();
+            showToast('✅ Restored all 40 default programs from PDF!');
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 7. BACKUP & RESTORE (JSON)
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // Export Backup JSON
+        document.getElementById('btnBackupJson').addEventListener('click', () => {
+            if (programs.length === 0) {
+                showToast('⚠️ Database is empty. Nothing to backup.');
+                return;
+            }
+            const backupData = {
+                version: '1.0',
+                backupDate: new Date().toISOString(),
+                commissionType: commissionType,
+                commissionValue: commissionValue,
+                docFees: docFees,
+                programs: programs
+            };
+            const jsonString = JSON.stringify(backupData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const dateStr = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `isbm_fees_backup_${dateStr}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('💾 Backup exported successfully!');
+        });
+
+        // Trigger Restore JSON file picker
+        document.getElementById('btnRestoreJson').addEventListener('click', () => {
+            document.getElementById('jsonFileInput').click();
+        });
+
+        // Handle JSON File Restore
+        document.getElementById('jsonFileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                try {
+                    const data = JSON.parse(evt.target.result);
+                    const progList = Array.isArray(data) ? data : (data && Array.isArray(data.programs) ? data.programs : null);
+
+                    if (progList) {
+                        let nextRestoreId = 1;
+                        programs = progList.map(p => {
+                            const pId = p.id || nextRestoreId++;
+                            const uFee = parseFloat(p.uniFee) || 0;
+                            const eCharge = parseFloat(p.extraCharge) || 0;
+                            const cType = p.commissionType || commissionType;
+                            const cVal = p.commissionValue !== undefined ? parseFloat(p.commissionValue) : commissionValue;
+                            return {
+                                id: pId,
+                                program: p.program || 'Untitled Program',
+                                school: p.school || 'General',
+                                duration: p.duration || '1 Year',
+                                eligibility: p.eligibility || 'Any',
+                                uniFee: uFee,
+                                extraCharge: eCharge,
+                                commissionType: cType,
+                                commissionValue: cVal,
+                                total: calcTotal(uFee, cType, cVal, eCharge)
+                            };
+                        });
+
+                        if (data && data.docFees) docFees = data.docFees;
+                        if (data && data.commissionType) commissionType = data.commissionType;
+                        if (data && data.commissionValue !== undefined) commissionValue = data.commissionValue;
+
+                        saveProgramsToStorage();
+                        saveDocFeesToStorage();
+                        saveCommissionToStorage();
+
+                        document.getElementById('docDegree').value = docFees.degree;
+                        document.getElementById('docMigration').value = docFees.migration;
+                        document.getElementById('docProvisional').value = docFees.provisional;
+                        document.getElementById('commissionValue').value = commissionValue;
+                        document.getElementById('commissionType').value = commissionType;
+                        document.getElementById('commissionDisplay').textContent = getCommissionLabel(commissionType, commissionValue);
+
+                        renderSchools();
+                        renderTable();
+                        showToast(`✅ Successfully restored ${programs.length} programs from JSON!`);
+                    } else {
+                        showToast('❌ Invalid JSON file format. No programs found.');
+                    }
+                } catch (err) {
+                    showToast('❌ Error parsing JSON backup file.');
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 8. CSV IMPORT / EXPORT & ADD PROGRAM
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // Download CSV Template
+        document.getElementById('btnDownloadTemplate').addEventListener('click', () => {
+            const headers = ['Program', 'School', 'Duration', 'Eligibility', 'University Fee', 'Extra Charge'];
+            const sampleRows = [
+                ['B.Tech', 'Engineering & Technology', '4 Sem', '10+2 PCM', '165000', '0'],
+                ['MBA', 'Management', '2 Sem', 'Graduation', '60000', '0'],
+                ['BCA', 'Information Technology', '3 Sem', '12th or equivalent', '52500', '0'],
+                ['BA', 'Arts & Humanities', '3 Sem', '12th or equivalent', '22500', '0']
+            ];
+            let csvContent = headers.join(',') + '\n';
+            sampleRows.forEach(row => {
+                csvContent += row.map(val => `"${val}"`).join(',') + '\n';
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'isbm_fees_template.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('📄 CSV template downloaded!');
+        });
+
+        // Export Current CSV
+        document.getElementById('btnExportCsv').addEventListener('click', () => {
+            if (programs.length === 0) {
+                showToast('⚠️ No programs available to export.');
+                return;
+            }
+            const headers = ['Program', 'School', 'Duration', 'Eligibility', 'University Fee', 'Extra Charge', 'Commission', 'Total Fee'];
+            let csvContent = headers.join(',') + '\n';
+
+            programs.forEach(p => {
+                const row = [
+                    p.program,
+                    p.school,
+                    p.duration,
+                    p.eligibility,
+                    p.uniFee,
+                    p.extraCharge || 0,
+                    getCommissionLabel(p.commissionType, p.commissionValue),
+                    p.total
+                ];
+                csvContent += row.map(val => `"${String(val || '').replace(/"/g, '""')}"`).join(',') + '\n';
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const dateStr = new Date().toISOString().split('T')[0];
+            a.href = url;
+            a.download = `isbm_fee_structure_${dateStr}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('⬇️ CSV exported successfully!');
+        });
+
+        // Upload and Parse CSV (Handles UTF-8 BOM, Quotes, Commas, Multiple formats)
+        document.getElementById('csvFileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                try {
+                    let text = evt.target.result;
+                    // Strip UTF-8 BOM if present
+                    if (text.charCodeAt(0) === 0xFEFF) {
+                        text = text.substr(1);
+                    }
+
+                    const lines = text.split(/\r\n|\n/).filter(line => line.trim() !== '');
+                    if (lines.length < 2) {
+                        showToast('⚠️ CSV file is empty or has no rows.');
+                        return;
+                    }
+
+                    function parseCSVLine(line) {
+                        const result = [];
+                        let current = '';
+                        let inQuotes = false;
+                        for (let i = 0; i < line.length; i++) {
+                            const char = line[i];
+                            if (char === '"') {
+                                if (inQuotes && line[i + 1] === '"') {
+                                    current += '"';
+                                    i++;
+                                } else {
+                                    inQuotes = !inQuotes;
+                                }
+                            } else if (char === ',' && !inQuotes) {
+                                result.push(current.trim());
+                                current = '';
+                            } else {
+                                current += char;
+                            }
+                        }
+                        result.push(current.trim());
+                        return result;
+                    }
+
+                    const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
+                    const progIdx = headers.findIndex(h => h.includes('program') || h.includes('course'));
+                    const schoolIdx = headers.findIndex(h => h.includes('school') || h.includes('dept') || h.includes('department'));
+                    const durIdx = headers.findIndex(h => h.includes('duration'));
+                    const eligIdx = headers.findIndex(h => h.includes('eligibility'));
+
+                    // Prioritize University Fee over Total Fee
+                    let feeIdx = headers.findIndex(h => (h.includes('university') && h.includes('fee')) || h.includes('unifee'));
+                    if (feeIdx === -1) {
+                        feeIdx = headers.findIndex(h => h.includes('fee') && !h.includes('total') && !h.includes('extra'));
+                    }
+                    const extraIdx = headers.findIndex(h => h.includes('extra'));
+
+                    if (progIdx === -1 || feeIdx === -1) {
+                        showToast('❌ CSV must contain at least "Program" and "University Fee" columns.');
+                        return;
+                    }
+
+                    let updatedCount = 0;
+                    let addedCount = 0;
+                    let nextId = programs.length ? Math.max(...programs.map(p => p.id)) + 1 : 1;
+
+                    for (let i = 1; i < lines.length; i++) {
+                        const parts = parseCSVLine(lines[i]);
+                        if (parts.length < 2) continue;
+
+                        const progName = parts[progIdx];
+                        if (!progName || progName.trim() === '') continue;
+
+                        const feeVal = (parts[feeIdx] ? parseFloat(parts[feeIdx].replace(/[^0-9.]/g, '')) : 0) || 0;
+                        const extraVal = (extraIdx !== -1 && parts[extraIdx]) ? (parseFloat(parts[extraIdx].replace(/[^0-9.]/g, '')) || 0) : 0;
+                        const schoolVal = schoolIdx !== -1 && parts[schoolIdx] ? parts[schoolIdx] : 'General';
+                        const durVal = durIdx !== -1 && parts[durIdx] ? parts[durIdx] : '1 Year';
+                        const eligVal = eligIdx !== -1 && parts[eligIdx] ? parts[eligIdx] : 'Any';
+
+                        const existing = programs.find(p => p.program.trim().toLowerCase() === progName.trim().toLowerCase());
+                        if (existing) {
+                            existing.uniFee = feeVal;
+                            existing.extraCharge = extraVal;
+                            if (schoolIdx !== -1 && parts[schoolIdx]) existing.school = schoolVal;
+                            if (durIdx !== -1 && parts[durIdx]) existing.duration = durVal;
+                            if (eligIdx !== -1 && parts[eligIdx]) existing.eligibility = eligVal;
+                            existing.total = calcTotal(feeVal, commissionType, commissionValue, extraVal);
+                            updatedCount++;
+                        } else {
+                            const total = calcTotal(feeVal, commissionType, commissionValue, extraVal);
+                            programs.push({
+                                id: nextId++,
+                                program: progName,
+                                school: schoolVal,
+                                duration: durVal,
+                                eligibility: eligVal,
+                                uniFee: feeVal,
+                                extraCharge: extraVal,
+                                commissionType: commissionType,
+                                commissionValue: commissionValue,
+                                total: total
+                            });
+                            addedCount++;
+                        }
+                    }
+
+                    saveProgramsToStorage();
+                    renderSchools();
+                    renderTable();
+                    showToast(`✅ CSV Processed: ${updatedCount} updated, ${addedCount} added!`);
+                } catch (err) {
+                    console.error(err);
+                    showToast('❌ Error parsing CSV file.');
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        });
+
+        // ─── ADD PROGRAM MODAL CONTROLS ───
+        const addProgramModal = document.getElementById('addProgramModal');
+        document.getElementById('btnAddProgramOpen').addEventListener('click', () => {
+            document.getElementById('newProgName').value = '';
+            document.getElementById('newProgSchool').value = '';
+            document.getElementById('newProgDuration').value = '';
+            document.getElementById('newProgElig').value = '';
+            document.getElementById('newProgFee').value = '';
+            document.getElementById('newProgExtra').value = '0';
+            addProgramModal.classList.add('open');
+        });
+        document.getElementById('closeAddProgramModalBtn').addEventListener('click', () => {
+            addProgramModal.classList.remove('open');
+        });
+        addProgramModal.addEventListener('click', (e) => {
+            if (e.target === addProgramModal) addProgramModal.classList.remove('open');
+        });
+
+        document.getElementById('saveNewProgramBtn').addEventListener('click', () => {
+            const name = document.getElementById('newProgName').value.trim();
+            const school = document.getElementById('newProgSchool').value.trim() || 'General';
+            const duration = document.getElementById('newProgDuration').value.trim() || '1 Year';
+            const elig = document.getElementById('newProgElig').value.trim() || 'Equivalent';
+            const fee = parseFloat(document.getElementById('newProgFee').value);
+            const extra = parseFloat(document.getElementById('newProgExtra').value) || 0;
+
+            if (!name) {
+                showToast('⚠️ Please enter Program name.');
+                return;
+            }
+            if (isNaN(fee) || fee < 0) {
+                showToast('⚠️ Please enter a valid University Fee.');
+                return;
+            }
+
+            const nextId = programs.length ? Math.max(...programs.map(p => p.id)) + 1 : 1;
+            const total = calcTotal(fee, commissionType, commissionValue, extra);
+
+            programs.push({
+                id: nextId,
+                program: name,
+                school: school,
+                duration: duration,
+                eligibility: elig,
+                uniFee: fee,
+                extraCharge: extra,
+                commissionType: commissionType,
+                commissionValue: commissionValue,
+                total: total
+            });
+
+            saveProgramsToStorage();
+            renderSchools();
+            renderTable();
+            addProgramModal.classList.remove('open');
+            showToast(`✅ "${name}" added successfully!`);
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 9. PASSWORD MODAL CONTROLS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        const passwordModal = document.getElementById('passwordModal');
+        document.getElementById('btnChangePasswordOpen').addEventListener('click', () => {
+            document.getElementById('modalCurrentPwd').value = '';
+            document.getElementById('modalNewPwd').value = '';
+            document.getElementById('modalConfirmPwd').value = '';
+            passwordModal.classList.add('open');
+        });
+        document.getElementById('closePasswordModalBtn').addEventListener('click', () => {
+            passwordModal.classList.remove('open');
+        });
+        passwordModal.addEventListener('click', (e) => {
+            if (e.target === passwordModal) passwordModal.classList.remove('open');
+        });
+
+        document.getElementById('modalSavePwdBtn').addEventListener('click', () => {
+            const curr = document.getElementById('modalCurrentPwd').value.trim();
+            const newP = document.getElementById('modalNewPwd').value.trim();
+            const conf = document.getElementById('modalConfirmPwd').value.trim();
+
+            if (!curr || !newP || !conf) {
+                showToast('⚠️ Please fill in all fields.');
+                return;
+            }
+            if (curr !== getAdminPassword()) {
+                showToast('❌ Current password is incorrect.');
+                return;
+            }
+            if (newP.length < 4) {
+                showToast('⚠️ New password must be at least 4 characters.');
+                return;
+            }
+            if (newP !== conf) {
+                showToast('❌ New password and confirmation do not match.');
+                return;
+            }
+            setAdminPassword(newP);
+            passwordModal.classList.remove('open');
+            showToast('✅ Admin password updated successfully!');
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 10. WHATSAPP QUOTATION MODAL
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        let waProgram = null;
+
+        function openWhatsAppModal(prog) {
+            waProgram = prog;
+            const msg = buildWhatsAppMessage(prog);
+            document.getElementById('waMessagePreview').textContent = msg;
+            document.getElementById('waModal').classList.add('open');
+        }
+
+        function buildWhatsAppMessage(prog) {
+            const lines = [];
+            lines.push('🏛️ *ISBM University Raipur Chhattisgarh*');
+            lines.push('');
+            lines.push(`📘 *Program:* ${prog.program}`);
+            lines.push(`⏳ *Duration:* ${prog.duration}`);
+            lines.push(`📋 *Eligibility:* ${prog.eligibility}`);
+            lines.push(`🏫 *School:* ${prog.school}`);
+            lines.push('');
+            lines.push(`💵 *Total Fees:* ${formatCurrency(prog.total)}`);
+            lines.push('Only for Marksheet');
+            lines.push('───────────────────────────');
+            lines.push('📄 *Additional Document Charges:*');
+            lines.push(`• Degree Certificate: ${formatCurrency(docFees.degree)}`);
+            lines.push(`• Migration Certificate: ${formatCurrency(docFees.migration)}`);
+            lines.push(`• Provisional Degree Certificate: ${formatCurrency(docFees.provisional)}`);
+            lines.push('───────────────────────────');
+            lines.push('');
+            lines.push('📌 For document applications, eligibility,');
+            lines.push('or any further information, please feel free to contact me.');
+            lines.push('');
+            lines.push('───────────────────────────');
+            lines.push('🙏 Thanks & Regards');
+            lines.push('*Mr. Shyam Pimplkar*');
+            lines.push('🌐 gopaleducationacademy.co.in');
+            lines.push('📱 9309543825');
+            return lines.join('\n');
+        }
+
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            document.getElementById('waModal').classList.remove('open');
+        });
+        document.getElementById('waModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) document.getElementById('waModal').classList.remove('open');
+        });
+        document.getElementById('waSendBtn').addEventListener('click', () => {
+            if (!waProgram) return;
+            const msg = buildWhatsAppMessage(waProgram);
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+            document.getElementById('waModal').classList.remove('open');
+        });
+        document.getElementById('waCopyBtn').addEventListener('click', async () => {
+            if (!waProgram) return;
+            const msg = buildWhatsAppMessage(waProgram);
+            try {
+                await navigator.clipboard.writeText(msg);
+                showToast('📋 Message copied to clipboard!');
+            } catch {
+                const ta = document.createElement('textarea');
+                ta.value = msg;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('📋 Message copied!');
+            }
+            document.getElementById('waModal').classList.remove('open');
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 11. COMMISSION CONTROLS
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        function applyCommission() {
+            const val = parseFloat(document.getElementById('commissionValue').value);
+            const type = document.getElementById('commissionType').value;
+            if (isNaN(val) || val < 0) {
+                showToast('⚠️ Please enter a valid commission value.');
+                return;
+            }
+            commissionValue = val;
+            commissionType = type;
+            saveCommissionToStorage();
+            programs.forEach(p => {
+                p.commissionType = type;
+                p.commissionValue = val;
+                p.total = calcTotal(p.uniFee, type, val, p.extraCharge);
+            });
+            document.getElementById('commissionDisplay').textContent = getCommissionLabel(type, val);
+            editingId = null;
+            renderTable();
+            showToast(`✅ Commission updated: ${getCommissionLabel(type, val)}`);
+        }
+        document.getElementById('applyCommissionBtn').addEventListener('click', applyCommission);
+        document.getElementById('commissionValue').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') applyCommission();
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 12. BULK FEE EDIT
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        function bulkEdit(direction) {
+            if (programs.length === 0) {
+                showToast('⚠️ No programs available to edit. Please add programs or restore defaults.');
+                return;
+            }
+            const val = parseFloat(document.getElementById('bulkPercent').value);
+            const type = document.getElementById('bulkType').value;
+            if (isNaN(val) || val <= 0) {
+                showToast('⚠️ Please enter a positive value.');
+                return;
+            }
+            const factor = (direction === 'increase') ? 1 : -1;
+            let changed = 0;
+            programs.forEach(p => {
+                let delta;
+                if (type === 'percent') {
+                    delta = p.uniFee * (val / 100) * factor;
+                } else {
+                    delta = val * factor;
+                }
+                const newFee = Math.round(p.uniFee + delta);
+                if (newFee >= 0) {
+                    p.uniFee = newFee;
+                    p.total = calcTotal(newFee, p.commissionType, p.commissionValue, p.extraCharge);
+                    changed++;
+                }
+            });
+            if (changed > 0) {
+                saveProgramsToStorage();
+                editingId = null;
+                renderTable();
+                showToast(`✅ Bulk ${direction} applied to ${changed} programs.`);
+            }
+        }
+        document.getElementById('bulkApplyBtn').addEventListener('click', () => bulkEdit('increase'));
+        document.getElementById('bulkDecreaseBtn').addEventListener('click', () => bulkEdit('decrease'));
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 13. RESET TO ORIGINAL PDF VALUES
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            if (!confirm('Are you sure you want to reset all University Fees to the original PDF values? Extra Charges and Commission will remain unchanged.')) {
+                return;
+            }
+            restoreDefaultPrograms();
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 14. DOCUMENT CHARGES
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        document.getElementById('docSaveBtn').addEventListener('click', () => {
+            const d = parseFloat(document.getElementById('docDegree').value);
+            const m = parseFloat(document.getElementById('docMigration').value);
+            const p = parseFloat(document.getElementById('docProvisional').value);
+            if (isNaN(d) || isNaN(m) || isNaN(p) || d < 0 || m < 0 || p < 0) {
+                showToast('⚠️ Please enter valid positive numbers.');
+                return;
+            }
+            docFees.degree = d;
+            docFees.migration = m;
+            docFees.provisional = p;
+            saveDocFeesToStorage();
+            showToast('✅ Document charges saved successfully!');
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 15. SEARCH FILTER
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderTable();
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 16. LOGIN & LOGOUT (WITH SESSION PERSISTENCE)
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        const loginOverlay = document.getElementById('loginOverlay');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginError = document.getElementById('loginError');
+        const loginToggleBtn = document.getElementById('loginToggleBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        function login() {
+            const entered = loginPassword.value.trim();
+            if (entered === getAdminPassword()) {
+                adminLoggedIn = true;
+                sessionStorage.setItem('isbm_admin_session', 'true');
+                loginOverlay.classList.add('hidden');
+                loginError.style.display = 'none';
+                loginPassword.value = '';
+                renderTable();
+                showToast('🔓 Welcome Admin!');
+            } else {
+                loginError.style.display = 'block';
+                loginPassword.value = '';
+                loginPassword.focus();
+            }
+        }
+        loginBtn.addEventListener('click', login);
+        loginPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter') login(); });
+        loginToggleBtn.addEventListener('click', () => {
+            loginOverlay.classList.remove('hidden');
+            loginPassword.focus();
+            loginError.style.display = 'none';
+        });
+        loginOverlay.addEventListener('click', (e) => { if (e.target === loginOverlay) loginOverlay.classList.add('hidden'); });
+        logoutBtn.addEventListener('click', () => {
+            adminLoggedIn = false;
+            sessionStorage.removeItem('isbm_admin_session');
+            editingId = null;
+            renderTable();
+            showToast('👋 Logged out. Public view active.');
+        });
+
+        // ── Keyboard Shortcuts (Escape to close modals, Enter to submit) ──
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('passwordModal').classList.remove('open');
+                document.getElementById('addProgramModal').classList.remove('open');
+                document.getElementById('firebaseModal').classList.remove('open');
+                document.getElementById('waModal').classList.remove('open');
+                document.getElementById('loginOverlay').classList.add('hidden');
+            }
+        });
+        document.getElementById('modalConfirmPwd').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('modalSavePwdBtn').click();
+        });
+        document.getElementById('newProgExtra').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') document.getElementById('saveNewProgramBtn').click();
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 17. TOAST HELPER
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        let toastTimer = null;
+        function showToast(msg) {
+            const el = document.getElementById('toast');
+            el.innerHTML = msg;
+            el.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+        }
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 18. FIREBASE REALTIME CLOUD INTEGRATION (FREE SPARK PLAN)
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        let db = null;
+        let firebaseApp = null;
+        let isFirebaseConnected = false;
+        let isSyncingFromCloud = false;
+
+        function updateFirebaseBadge(status, text) {
+            const badge = document.getElementById('firebaseStatusBadge');
+            if (!badge) return;
+            if (status === 'connected') {
+                badge.style.background = '#d1fae5';
+                badge.style.color = '#065f46';
+                badge.innerHTML = `<i class="fas fa-circle" style="font-size:7px; vertical-align:middle; color:#10b981;"></i> Cloud Live (${text || 'Active'})`;
+            } else if (status === 'error') {
+                badge.style.background = '#fee2e2';
+                badge.style.color = '#991b1b';
+                badge.innerHTML = `<i class="fas fa-exclamation-circle" style="font-size:8px; vertical-align:middle;"></i> Cloud Error`;
+            } else {
+                badge.style.background = '#f1f5f9';
+                badge.style.color = '#64748b';
+                badge.innerHTML = `<i class="fas fa-circle" style="font-size:7px; vertical-align:middle; color:#94a3b8;"></i> Local Mode`;
+            }
+        }
+
+        function initFirebase() {
+            const stored = localStorage.getItem('isbm_firebase_config');
+            if (!stored) {
+                updateFirebaseBadge('local');
+                return;
+            }
+            try {
+                let config;
+                if (stored.trim().startsWith('{')) {
+                    config = JSON.parse(stored);
+                } else {
+                    config = eval('(' + stored + ')');
+                }
+
+                if (!firebase.apps.length) {
+                    firebaseApp = firebase.initializeApp(config);
+                } else {
+                    firebaseApp = firebase.app();
+                }
+                db = firebase.firestore();
+                isFirebaseConnected = true;
+                updateFirebaseBadge('connected', config.projectId);
+
+                // Listen for real-time cloud updates across devices
+                db.collection('isbm_portal').doc('data').onSnapshot((doc) => {
+                    if (doc.exists) {
+                        const cloudData = doc.data();
+                        if (cloudData && Array.isArray(cloudData.programs)) {
+                            isSyncingFromCloud = true;
+                            programs = cloudData.programs;
+                            if (cloudData.docFees) docFees = cloudData.docFees;
+                            if (cloudData.commissionType) commissionType = cloudData.commissionType;
+                            if (cloudData.commissionValue !== undefined) commissionValue = cloudData.commissionValue;
+
+                            localStorage.setItem('isbm_programs', JSON.stringify(programs));
+                            localStorage.setItem('isbm_docfees', JSON.stringify(docFees));
+                            localStorage.setItem('isbm_commission_val', commissionValue);
+                            localStorage.setItem('isbm_commission_type', commissionType);
+
+                            document.getElementById('docDegree').value = docFees.degree;
+                            document.getElementById('docMigration').value = docFees.migration;
+                            document.getElementById('docProvisional').value = docFees.provisional;
+                            document.getElementById('commissionValue').value = commissionValue;
+                            document.getElementById('commissionType').value = commissionType;
+                            document.getElementById('commissionDisplay').textContent = getCommissionLabel(commissionType, commissionValue);
+
+                            renderSchools();
+                            renderTable();
+                            isSyncingFromCloud = false;
+                        }
+                    }
+                }, (err) => {
+                    console.warn('Firebase sync notice:', err);
+                });
+            } catch (e) {
+                console.error('Firebase setup error:', e);
+                updateFirebaseBadge('error');
+            }
+        }
+
+        function syncToFirebase() {
+            if (!db || !isFirebaseConnected || isSyncingFromCloud) return;
+            try {
+                db.collection('isbm_portal').doc('data').set({
+                    programs: programs,
+                    docFees: docFees,
+                    commissionType: commissionType,
+                    commissionValue: commissionValue,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true }).catch(err => {
+                    console.warn('Firebase write notice:', err);
+                });
+            } catch (e) {
+                console.error('Firebase sync error:', e);
+            }
+        }
+
+        // Firebase Modal Controls
+        const firebaseModal = document.getElementById('firebaseModal');
+        document.getElementById('btnFirebaseConfigOpen').addEventListener('click', () => {
+            const currentCfg = localStorage.getItem('isbm_firebase_config') || '';
+            document.getElementById('firebaseConfigInput').value = currentCfg;
+            firebaseModal.classList.add('open');
+        });
+        document.getElementById('closeFirebaseModalBtn').addEventListener('click', () => {
+            firebaseModal.classList.remove('open');
+        });
+        firebaseModal.addEventListener('click', (e) => {
+            if (e.target === firebaseModal) firebaseModal.classList.remove('open');
+        });
+
+        document.getElementById('saveFirebaseConfigBtn').addEventListener('click', () => {
+            const val = document.getElementById('firebaseConfigInput').value.trim();
+            if (!val) {
+                showToast('⚠️ Please paste your Firebase config.');
+                return;
+            }
+            try {
+                let parsed;
+                if (val.startsWith('{')) {
+                    parsed = JSON.parse(val);
+                } else {
+                    parsed = eval('(' + val + ')');
+                }
+                if (!parsed.apiKey || !parsed.projectId) {
+                    showToast('⚠️ Invalid config: apiKey & projectId required.');
+                    return;
+                }
+                localStorage.setItem('isbm_firebase_config', JSON.stringify(parsed));
+                firebaseModal.classList.remove('open');
+                initFirebase();
+                syncToFirebase();
+                showToast('🔥 Connected to Google Firebase Cloud successfully!');
+            } catch (e) {
+                showToast('❌ Invalid JSON config. Please check your syntax.');
+            }
+        });
+
+        document.getElementById('disconnectFirebaseBtn').addEventListener('click', () => {
+            if (confirm('Disconnect from Google Firebase and return to local storage mode?')) {
+                localStorage.removeItem('isbm_firebase_config');
+                isFirebaseConnected = false;
+                db = null;
+                firebaseModal.classList.remove('open');
+                updateFirebaseBadge('local');
+                showToast('⚪ Disconnected from Firebase. Running in Local Mode.');
+            }
+        });
+
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // 19. INITIALIZATION
+        // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        if (sessionStorage.getItem('isbm_admin_session') === 'true') {
+            adminLoggedIn = true;
+        }
+        loadDocFeesFromStorage();
+        loadCommissionFromStorage();
+        buildPrograms();
+        renderSchools();
+        renderTable();
+        initFirebase();
+        console.log('🏛️ ISBM Fee Portal 100% Loaded. Default Password: isbm2025');
+    </script>
+</body>
+</html>

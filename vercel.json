@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "name": "isbm-fee-portal",
+  "cleanUrls": true,
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
