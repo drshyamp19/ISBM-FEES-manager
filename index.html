@@ -2427,6 +2427,17 @@
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         // 18. FIREBASE REALTIME CLOUD INTEGRATION (FREE SPARK PLAN)
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // Default Embedded Firebase Project Configuration
+        const DEFAULT_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyCV90jAVz0O-MhYfbJawmlXeKSVzcMZ_bo",
+            authDomain: "isbm-fees.firebaseapp.com",
+            projectId: "isbm-fees",
+            storageBucket: "isbm-fees.firebasestorage.app",
+            messagingSenderId: "414697925808",
+            appId: "1:414697925808:web:5e085fad89fe2a7572df75",
+            measurementId: "G-G32CQY5S5N"
+        };
+
         let db = null;
         let firebaseApp = null;
         let isFirebaseConnected = false;
@@ -2442,7 +2453,7 @@
             } else if (status === 'error') {
                 badge.style.background = '#fee2e2';
                 badge.style.color = '#991b1b';
-                badge.innerHTML = `<i class="fas fa-exclamation-circle" style="font-size:8px; vertical-align:middle;"></i> Cloud Error`;
+                badge.innerHTML = `<i class="fas fa-exclamation-circle" style="font-size:8px; vertical-align:middle;"></i> Cloud Error: ${text || 'Check Rules'}`;
             } else {
                 badge.style.background = '#f1f5f9';
                 badge.style.color = '#64748b';
@@ -2451,19 +2462,17 @@
         }
 
         function initFirebase() {
+            let config = DEFAULT_FIREBASE_CONFIG;
             const stored = localStorage.getItem('isbm_firebase_config');
-            if (!stored) {
-                updateFirebaseBadge('local');
-                return;
-            }
-            try {
-                let config;
-                if (stored.trim().startsWith('{')) {
+            if (stored) {
+                try {
                     config = JSON.parse(stored);
-                } else {
-                    config = eval('(' + stored + ')');
+                } catch (e) {
+                    config = DEFAULT_FIREBASE_CONFIG;
                 }
+            }
 
+            try {
                 if (!firebase.apps.length) {
                     firebaseApp = firebase.initializeApp(config);
                 } else {
@@ -2473,7 +2482,7 @@
                 isFirebaseConnected = true;
                 updateFirebaseBadge('connected', config.projectId);
 
-                // Listen for real-time cloud updates across devices
+                // Listen for real-time cloud updates across all devices
                 db.collection('isbm_portal').doc('data').onSnapshot((doc) => {
                     if (doc.exists) {
                         const cloudData = doc.data();
@@ -2500,13 +2509,20 @@
                             renderTable();
                             isSyncingFromCloud = false;
                         }
+                    } else {
+                        // First time ever: initialize cloud with default program list
+                        syncToFirebase();
                     }
                 }, (err) => {
                     console.warn('Firebase sync notice:', err);
+                    if (err && (err.code === 'permission-denied' || String(err).includes('permission'))) {
+                        updateFirebaseBadge('error', 'Rules Permission');
+                        showToast('⚠️ Firebase rules require permission. Check Firestore Rules in Firebase Console!');
+                    }
                 });
             } catch (e) {
                 console.error('Firebase setup error:', e);
-                updateFirebaseBadge('error');
+                updateFirebaseBadge('error', 'Setup failed');
             }
         }
 
@@ -2521,6 +2537,9 @@
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true }).catch(err => {
                     console.warn('Firebase write notice:', err);
+                    if (err && (err.code === 'permission-denied' || String(err).includes('permission'))) {
+                        showToast('⚠️ Firestore Rule Blocked: Set rules in Firebase Console!');
+                    }
                 });
             } catch (e) {
                 console.error('Firebase sync error:', e);
