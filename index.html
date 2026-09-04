@@ -1350,7 +1350,7 @@
             <h2>🔐 Admin Login</h2>
             <p>Enter your admin password to manage and edit fees.</p>
             <label for="loginPassword">Password</label>
-            <input type="password" id="loginPassword" placeholder="Enter password (default: isbm2025)" autofocus />
+            <input type="password" id="loginPassword" placeholder="Enter password" autofocus />
             <button class="login-btn" id="loginBtn">Login</button>
             <div class="login-error" id="loginError">Incorrect password. Please try again.</div>
         </div>
@@ -2548,13 +2548,33 @@
                 return;
             }
             try {
-                let parsed;
-                if (val.startsWith('{')) {
-                    parsed = JSON.parse(val);
-                } else {
-                    parsed = eval('(' + val + ')');
+                let clean = val.replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, '');
+                const start = clean.indexOf('{');
+                const end = clean.lastIndexOf('}');
+                if (start !== -1 && end !== -1 && end > start) {
+                    clean = clean.substring(start, end + 1);
                 }
-                if (!parsed.apiKey || !parsed.projectId) {
+                let parsed = null;
+                try {
+                    parsed = JSON.parse(clean);
+                } catch (e) {}
+                if (!parsed) {
+                    try {
+                        parsed = (new Function('return (' + clean + ');'))();
+                    } catch (e) {}
+                }
+                if (!parsed) {
+                    const apiKey = (val.match(/apiKey\s*:\s*["']([^"']+)["']/) || [])[1];
+                    const projectId = (val.match(/projectId\s*:\s*["']([^"']+)["']/) || [])[1];
+                    const authDomain = (val.match(/authDomain\s*:\s*["']([^"']+)["']/) || [])[1];
+                    const storageBucket = (val.match(/storageBucket\s*:\s*["']([^"']+)["']/) || [])[1];
+                    const messagingSenderId = (val.match(/messagingSenderId\s*:\s*["']([^"']+)["']/) || [])[1];
+                    const appId = (val.match(/appId\s*:\s*["']([^"']+)["']/) || [])[1];
+                    if (apiKey && projectId) {
+                        parsed = { apiKey, projectId, authDomain, storageBucket, messagingSenderId, appId };
+                    }
+                }
+                if (!parsed || !parsed.apiKey || !parsed.projectId) {
                     showToast('⚠️ Invalid config: apiKey & projectId required.');
                     return;
                 }
@@ -2591,7 +2611,7 @@
         renderSchools();
         renderTable();
         initFirebase();
-        console.log('🏛️ ISBM Fee Portal 100% Loaded. Default Password: isbm2025');
+        console.log('🏛️ ISBM Fee Portal 100% Loaded.');
     </script>
 </body>
 </html>
