@@ -1434,7 +1434,7 @@
             const extraCharge = parseFloat(extra) || 0;
             const commVal = parseFloat(val) || 0;
             let commissionAmount = 0;
-            if (type === 'percentage') {
+            if (type === 'percentage' || type === 'percent') {
                 commissionAmount = fee * (commVal / 100);
             } else {
                 commissionAmount = commVal;
@@ -1447,7 +1447,7 @@
         }
 
         function getCommissionLabel(type, val) {
-            if (type === 'percentage') return (val || 0) + '%';
+            if (type === 'percentage' || type === 'percent') return (val || 0) + '%';
             return '₹' + Number(val || 0).toLocaleString('en-IN');
         }
 
@@ -1522,8 +1522,10 @@
             const loaded = loadProgramsFromStorage();
             programs = loaded.map(p => {
                 const extra = p.extraCharge || 0;
-                const total = calcTotal(p.uniFee, commissionType, commissionValue, extra);
-                return { ...p, commissionType, commissionValue, total, extraCharge: extra };
+                const cType = p.commissionType || commissionType;
+                const cVal = (p.commissionValue !== undefined && p.commissionValue !== null) ? p.commissionValue : commissionValue;
+                const total = calcTotal(p.uniFee, cType, cVal, extra);
+                return { ...p, commissionType: cType, commissionValue: cVal, total, extraCharge: extra };
             });
         }
 
@@ -1647,6 +1649,17 @@
                     if (isEditing) {
                         uniFeeDisplay = `<input class="edit-input" type="number" id="editUniFee_${p.id}" value="${p.uniFee}" min="0" step="500" />`;
                         extraDisplay = `<input class="edit-input" type="number" id="editExtra_${p.id}" value="${p.extraCharge || 0}" min="0" step="100" />`;
+                        const pCommType = p.commissionType || commissionType;
+                        const pCommVal = (p.commissionValue !== undefined && p.commissionValue !== null) ? p.commissionValue : commissionValue;
+                        commissionDisplay = `
+                            <div style="display:inline-flex; align-items:center; gap:4px;">
+                                <input class="edit-input" type="number" id="editCommVal_${p.id}" value="${pCommVal}" min="0" step="0.5" style="width:70px;" />
+                                <select id="editCommType_${p.id}" style="padding:6px 6px; font-size:12px; border:2px solid #1a4a8a; border-radius:6px; background:#fafcff;">
+                                    <option value="percentage" ${pCommType === 'percentage' || pCommType === 'percent' ? 'selected' : ''}>%</option>
+                                    <option value="fixed" ${pCommType === 'fixed' ? 'selected' : ''}>₹ Fixed</option>
+                                </select>
+                            </div>
+                        `;
                         actionsHtml = `<div class="edit-actions">
                             <button class="save-edit" data-id="${p.id}" title="Save"><i class="fas fa-check"></i></button>
                             <button class="cancel-edit" data-id="${p.id}" title="Cancel"><i class="fas fa-times"></i></button>
@@ -1654,12 +1667,12 @@
                     } else {
                         uniFeeDisplay = `<span class="uni-fee-readonly">${formatCurrency(p.uniFee)}</span>`;
                         extraDisplay = formatCurrency(p.extraCharge || 0);
+                        commissionDisplay = getCommissionLabel(p.commissionType, p.commissionValue);
                         actionsHtml = `
-                            <button class="btn-icon edit" data-id="${p.id}" title="Edit University Fee & Extra Charge"><i class="fas fa-pen"></i></button>
+                            <button class="btn-icon edit" data-id="${p.id}" title="Edit University Fee, Extra Charge & Commission"><i class="fas fa-pen"></i></button>
                             <button class="btn-icon delete" data-id="${p.id}" title="Delete Program"><i class="fas fa-trash-alt" style="color:#dc3545;"></i></button>
                         `;
                     }
-                    commissionDisplay = getCommissionLabel(p.commissionType, p.commissionValue);
                 }
 
                 const rowClass = isEditing ? 'editing-row' : '';
@@ -1712,10 +1725,14 @@
                         const id = parseInt(btn.dataset.id);
                         const uniInput = document.getElementById(`editUniFee_${id}`);
                         const extraInput = document.getElementById(`editExtra_${id}`);
+                        const commValInput = document.getElementById(`editCommVal_${id}`);
+                        const commTypeInput = document.getElementById(`editCommType_${id}`);
                         if (!uniInput || !extraInput) return;
 
                         const newUni = parseFloat(uniInput.value);
                         const newExtra = parseFloat(extraInput.value);
+                        const newCommVal = commValInput ? parseFloat(commValInput.value) : commissionValue;
+                        const newCommType = commTypeInput ? commTypeInput.value : commissionType;
 
                         if (isNaN(newUni) || newUni < 0) {
                             showToast('⚠️ Please enter a valid University Fee.');
@@ -1725,12 +1742,18 @@
                             showToast('⚠️ Please enter a valid Extra Charge.');
                             return;
                         }
+                        if (isNaN(newCommVal) || newCommVal < 0) {
+                            showToast('⚠️ Please enter a valid Commission.');
+                            return;
+                        }
 
                         const prog = programs.find(p => p.id === id);
                         if (prog) {
                             prog.uniFee = newUni;
                             prog.extraCharge = newExtra;
-                            prog.total = calcTotal(newUni, commissionType, commissionValue, newExtra);
+                            prog.commissionType = newCommType;
+                            prog.commissionValue = newCommVal;
+                            prog.total = calcTotal(newUni, newCommType, newCommVal, newExtra);
                             saveProgramsToStorage();
                             showToast(`✅ Updated "${prog.program}" successfully!`);
                         }
@@ -2261,12 +2284,13 @@
             }
             commissionValue = val;
             commissionType = type;
-            saveCommissionToStorage();
             programs.forEach(p => {
                 p.commissionType = type;
                 p.commissionValue = val;
                 p.total = calcTotal(p.uniFee, type, val, p.extraCharge);
             });
+            saveCommissionToStorage();
+            saveProgramsToStorage();
             document.getElementById('commissionDisplay').textContent = getCommissionLabel(type, val);
             editingId = null;
             renderTable();
@@ -2275,6 +2299,15 @@
         document.getElementById('applyCommissionBtn').addEventListener('click', applyCommission);
         document.getElementById('commissionValue').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') applyCommission();
+        });
+        document.getElementById('commissionType').addEventListener('change', (e) => {
+            const valInput = document.getElementById('commissionValue');
+            const currentVal = parseFloat(valInput.value) || 0;
+            if (e.target.value === 'percentage' || e.target.value === 'percent') {
+                if (currentVal > 100) valInput.value = '25';
+            } else {
+                if (currentVal <= 100 && currentVal > 0) valInput.value = '5000';
+            }
         });
 
         // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
